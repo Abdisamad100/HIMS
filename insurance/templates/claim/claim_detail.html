@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Claim #{{ claim.id }}</h1>
+
+<p><strong>Member:</strong> {{ claim.member.user.get_full_name }}</p>
+<p><strong>Hospital:</strong> {{ claim.hospital.username }}</p>
+<p><strong>Amount:</strong> {{ claim.amount }}</p>
+<p><strong>Date of Service:</strong> {{ claim.date_of_service }}</p>
+<p><strong>Status:</strong> {{ claim.status }}</p>
+<p><strong>Notes:</strong> <br>{{ claim.notes|linebreaks }}</p>
+
+{% if role == "hospital" and claim.status not in non_editable_status %}
+    <a href="{% url 'hospital_edit_claim' claim.pk %}" class="btn btn-sm btn-warning">Edit</a>
+{% endif %}
+
+{% if role == "claim_officer" and claim.status in officer_action_status %}
+    <a href="{% url 'claim_officer_action' claim.pk 'approve' %}" class="btn btn-sm btn-success">Approve</a>
+    <a href="{% url 'claim_officer_action' claim.pk 'reject' %}" class="btn btn-sm btn-danger">Reject</a>
+    <a href="{% url 'claim_officer_action' claim.pk 'forward' %}" class="btn btn-sm btn-warning">Forward</a>
+{% endif %}
+
+<a href="{% url 'claim_dashboard' %}" class="btn btn-secondary mt-3">Back to List</a>
+{% endblock %}

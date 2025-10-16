@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <div class="card shadow p-4 mx-auto" style="max-width: 700px;">
+    <h3 class="text-center mb-4">Register New Member</h3>
+
+    <form method="POST">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      
+      <h5>Account Information</h5>
+      <hr>
+      <div class="row">
+        <div class="col-md-6">{{ form.username.label_tag }} {{ form.username }}</div>
+        <div class="col-md-6">{{ form.email.label_tag }} {{ form.email }}</div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-md-6">{{ form.first_name.label_tag }} {{ form.first_name }}</div>
+        <div class="col-md-6">{{ form.last_name.label_tag }} {{ form.last_name }}</div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-md-6">{{ form.password.label_tag }} {{ form.password }}</div>
+        <div class="col-md-6">{{ form.password2.label_tag }} {{ form.password2 }}</div>
+      </div>
+
+      <h5 class="mt-4">Member Information</h5>
+      <hr>
+      <div class="row">
+        <div class="col-md-6">{{ form.policy.label_tag }} {{ form.policy }}</div>
+        <div class="col-md-6">{{ form.phone.label_tag }} {{ form.phone }}</div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-md-8">{{ form.address.label_tag }} {{ form.address }}</div>
+        <div class="col-md-4">{{ form.date_of_birth.label_tag }} {{ form.date_of_birth }}</div>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 mt-4">Register Member</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Admin — Pro Dashboard</title>
+
+    <!-- Tailwind CDN (prototype) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { darkMode: 'class' }</script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Small visual polish */
+        .card {
+            border-radius: 1rem;
+            box-shadow: 0 8px 30px rgba(2, 6, 23, 0.06);
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(6px);
+        }
+
+        .btn {
+            transition: all .14s ease-in-out;
+        }
+
+        /* subtle scrollbar */
+        ::-webkit-scrollbar {
+            height: 10px;
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.12);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100">
+
+    <div class="min-h-screen flex">
+        <!-- SIDEBAR -->
+        <aside id="sidebar"
+            class="w-72 bg-gradient-to-b from-indigo-700 to-sky-700 text-white p-5 flex flex-col gap-6 transition-all">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6">
+                            <path d="M12 3v18M3 12h18" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-semibold text-lg leading-4">HealthInsure</div>
+                        <div class="text-xs text-white/80">Admin Portal</div>
+                    </div>
+                </div>
+                <button id="collapseBtn" class="md:hidden text-white/90 btn">✕</button>
+            </div>
+
+            <nav class="flex-1">
+                <ul id="menu" class="space-y-1">
+                    <li><button data-section="home"
+                            class="menu-link w-full flex items-center gap-3 px-3 py-2 rounded-md bg-white/10">🏠
+                            Dashboard</button></li>
+                    <li><button data-section="users"
+                            class="menu-link w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/10">👥
+                            Users</button></li>
+                    <li><button data-section="agents"
+                            class="menu-link w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/10">🧑‍💼
+                            Agents</button></li>
+                    <li><button data-section="hospitals"
+                            class="menu-link w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/10">🏥
+                            Hospitals</button></li>
+                    <li><button data-section="claims"
+                            class="menu-link w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/10">📂
+                            Claims</button></li>
+                    <li><button data-section="reports"
+                            class="menu-link w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/10">📊
+                            Reports</button></li>
+                    <li><button data-section="settings"
+                            class="menu-link w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/10">⚙
+                            Settings</button></li>
+                </ul>
+            </nav>
+
+            <div class="mt-auto space-y-2">
+                <button id="addUserBtn" class="w-full rounded-xl py-2 bg-white/20 hover:bg-white/30">＋ Add user</button>
+                <button id="themeBtn" class="w-full rounded-xl py-2 bg-white/10">🌙 Theme</button>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+            <!-- Topbar -->
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-6">
+                <!-- Left side -->
+                <div class="flex items-center gap-4">
+                    <!-- Sidebar toggle (mobile) -->
+                    <button id="menuToggle" class="md:hidden p-2 rounded bg-white/10 hover:bg-white/20">☰</button>
+
+                    <div>
+                        <h1 class="text-2xl font-bold">Administrator Dashboard</h1>
+                        <p class="text-sm text-slate-500">Overview & management</p>
+                    </div>
+                </div>
+
+                <!-- Right side -->
+                <div class="flex items-center gap-3">
+                    <!-- Search -->
+                    <div class="relative">
+                        <input id="globalSearch" type="search" placeholder="Search users, claims, hospitals..."
+                            class="px-4 py-2 rounded-2xl border border-slate-200 bg-white/60 focus:outline-none focus:ring focus:ring-indigo-200" />
+                        <button id="searchClear"
+                            class="absolute right-2 top-1.5 text-slate-500 hidden hover:text-rose-500">✖</button>
+                    </div>
+
+                    <!-- Notifications -->
+                    <div class="relative">
+                        <button id="notifBtnTop"
+                            class="p-2 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-lg relative">
+                            🔔
+                            <span id="notifCountTop"
+                                class="absolute -top-1 -right-1 text-xs bg-rose-500 px-1 rounded-full text-white">3</span>
+                        </button>
+                        <div id="notifDropdown"
+                            class="hidden absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-lg shadow z-50 p-2">
+                            <div class="text-sm font-medium mb-2">Recent Notifications</div>
+                            <div id="notifList" class="space-y-1 text-sm text-slate-600 dark:text-slate-300">
+                                <div class="px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700">✅ Claim #123
+                                    approved</div>
+                                <div class="px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700">⚠️ Pending
+                                    hospital registration</div>
+                                <div class="px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700">💬 2 new
+                                    messages</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile -->
+                    <div class="relative">
+                        <button id="profileBtn"
+                            class="flex items-center gap-2 px-3 py-1 rounded-2xl bg-white/10 hover:bg-white/20">
+                            <div
+                                class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-sky-600 flex items-center justify-center text-white">
+                                A
+                            </div>
+                            <div class="text-left">
+                                <div class="text-sm font-medium">Admin</div>
+                                <div class="text-xs text-slate-400">Superuser</div>
+                            </div>
+                        </button>
+                        <div id="profileMenu"
+                            class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow z-50 p-2">
+                            <button
+                                class="w-full text-left px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700">Profile</button>
+                            <button
+                                class="w-full text-left px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700">Settings</button>
+                            <button
+                                class="w-full text-left px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700">Logout</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- CONTENT -->
+            <div id="content">
+                <!-- HOME / DASHBOARD -->
+                <section id="sec-home">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <!-- KPI cards -->
+                        <div
+                            class="card bg-gradient-to-br from-white to-white/80 dark:from-slate-800 dark:to-slate-800 p-5">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="text-sm text-slate-500 dark:text-slate-400">Total Users</div>
+                                    <div id="kpi-users" class="text-2xl font-bold">{{ users_count }}</div>
+                                </div>
+                                <div class="p-3 rounded-xl bg-indigo-50 text-indigo-700">👥</div>
+                            </div>
+                        </div>
+
+                        <div class="card p-5 bg-white dark:bg-slate-800">
+                            <div>
+                                <div class="text-sm text-slate-500 dark:text-slate-400">Pending Claims</div>
+                                <div id="kpi-pending" class="text-2xl font-bold">{{ claims }}</div>
+                            </div>
+                        </div>
+
+                        <div class="card p-5 bg-white dark:bg-slate-800">
+                            <div>
+                                <div class="text-sm text-slate-500 dark:text-slate-400">Agents</div>
+                                <div id="kpi-agents" class="text-2xl font-bold">{{ agents }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Second row of KPIs -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="card p-5 bg-white dark:bg-slate-800">
+                            <div>
+                                <div class="text-sm text-slate-500 dark:text-slate-400">Policies</div>
+                                <div id="kpi-policies" class="text-2xl font-bold">{{ policies }}</div>
+                            </div>
+                        </div>
+
+                        <div class="card p-5 bg-white dark:bg-slate-800">
+                            <div>
+                                <div class="text-sm text-slate-500 dark:text-slate-400">Hospitals</div>
+                                <div id="kpi-hospitals" class="text-2xl font-bold">{{ hospitals }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CHARTS: make line chart larger and modern -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        <div class="card p-5 bg-white dark:bg-slate-800">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="font-semibold">Claims Trend — Last 6 months</h3>
+                                <div class="text-sm text-slate-400">Snapshot</div>
+                            </div>
+                            <div class="h-80">
+                                <canvas id="chart-line"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card p-5 bg-white dark:bg-slate-800">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="font-semibold">Claims Status</h3>
+                                <div class="text-sm text-slate-400">Distribution</div>
+                            </div>
+                            <div class="h-80 flex flex-col items-center justify-center">
+                                <canvas id="chart-donut" style="max-width:320px;"></canvas>
+                                <div id="statusLegend" class="mt-4 text-sm text-slate-500"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Recent Users -->
+                        <div class="card p-5 bg-white dark:bg-slate-800">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="font-semibold">Recent Users</h3>
+                                <button class="text-sm text-slate-500"
+                                    onclick="setActiveSection('users')">Manage</button>
+                            </div>
+                            <div id="recentUsers" class="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                                {% for profile in recent_users %}
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="font-medium">
+                                            {{ profile.user.get_full_name|default:profile.user.username }}
+                                        </div>
+                                        <div class="text-xs text-slate-500">
+                                            {{ profile.get_role_display }} • {{ profile.user.email }}
+                                        </div>
+                                    </div>
+                                    <div class="text-xs text-slate-400">
+                                        {{ profile.user.date_joined|date:"Y-m-d" }}
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="text-center text-slate-500">No users found</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Recent Claims -->
+                        <div class="card p-5 bg-white dark:bg-slate-800">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="font-semibold">Recent Claims</h3>
+                                <button class="text-sm text-slate-500"
+                                    onclick="setActiveSection('claims')">Manage</button>
+                            </div>
+                            <div id="recentClaims" class="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                                {% for claim in recent_claims %}
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="font-medium">
+                                            #{{ claim.id }} — {{
+                                            claim.member.user.get_full_name|default:claim.member.user.username }}
+                                        </div>
+                                        <div class="text-xs text-slate-500">
+                                            {{ claim.hospital }}
+                                        </div>
+                                    </div>
+                                    <div class="text-xs text-slate-400">
+                                        {{ claim.status }}
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="text-center text-slate-500">No claims found</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+            </div>
+            </section>
+
+            <!-- USERS -->
+            <section id="sec-users" class="hidden">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold">Users</h2>
+                    <div class="flex items-center gap-2">
+                        <select id="roleFilter" class="px-3 py-2 rounded border">
+                            <option value="all">All roles</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Agent">Agent</option>
+                            <option value="Hospital">Hospital</option>
+                            <option value="Claim Officer">Claim Officer</option>
+                            <option value="Customer">Customer</option>
+                        </select>
+                        <a href="{% url 'register_user' %}"
+                            class="px-3 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">＋ Add</a>
+                    </div>
+                </div>
+
+                <div class="card overflow-x-auto">
+                    <table class="min-w-full text-sm">
+                        <thead class="bg-slate-100 dark:bg-slate-800/50">
+                            <tr>
+                                <th class="px-4 py-3 text-left">Name</th>
+                                <th class="px-4 py-3 text-left">Role</th>
+                                <th class="px-4 py-3 text-left">Email</th>
+                                <th class="px-4 py-3 text-left">Status</th>
+                                <th class="px-4 py-3 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTbody" class="divide-y">
+                            {% for profile in users %}
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60">
+                                <td class="px-4 py-3">{{ profile.user.get_full_name|default:profile.user.username }}
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-1 rounded text-xs bg-slate-100 dark:bg-slate-700">
+                                        {{ profile.get_role_display }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3">{{ profile.user.email }}</td>
+                                <td class="px-4 py-3">
+                                    <span
+                                        class="px-2 py-1 rounded text-xs {% if profile.user.is_active %}bg-emerald-100 text-emerald-800{% else %}bg-amber-100 text-amber-800{% endif %}">
+                                        {% if profile.user.is_active %}Active{% else %}Inactive{% endif %}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <a href="#" class="text-sky-600 mr-3" title="Edit">✎</a>
+                                    <a href="#" class="text-rose-600" title="Suspend">⛔</a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="px-4 py-3 text-center text-slate-500">No users found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4 flex items-center justify-between text-sm text-slate-500">
+                    <div id="usersSummary">Showing {{ users|length }} users</div>
+                    <div class="flex gap-2">
+                        <button id="usersPrev" class="px-3 py-1 rounded bg-white/10">Prev</button>
+                        <button id="usersNext" class="px-3 py-1 rounded bg-white/10">Next</button>
+                    </div>
+                </div>
+
+
+            </section>
+
+            <!-- AGENTS -->
+            <!-- AGENTS -->
+            <section id="sec-agents" class="hidden">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold">Agents</h2>
+                    <div class="flex items-center gap-2">
+                        <a href="{% url 'register_user' %}?role=agent"
+                            class="px-3 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">＋ Add Agent</a>
+                    </div>
+                </div>
+
+                <div class="card overflow-x-auto">
+                    <table class="min-w-full text-sm">
+                        <thead class="bg-slate-100 dark:bg-slate-800/50">
+                            <tr>
+                                <th class="px-4 py-3 text-left">Name</th>
+                                <th class="px-4 py-3 text-left">Email</th>
+                                <th class="px-4 py-3 text-left">Phone</th>
+                                <th class="px-4 py-3 text-left">Status</th>
+                                <th class="px-4 py-3 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="agentsTbody" class="divide-y">
+                            {% for profile in agent_list %}
+                            {% if profile.role == 'Agent' %}
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60">
+                                <td class="px-4 py-3">
+                                    {{ profile.user.get_full_name|default:profile.user.username }}
+                                </td>
+                                <td class="px-4 py-3">{{ profile.user.email }}</td>
+                                <td class="px-4 py-3">{{ profile.phone_number|default:"—" }}</td>
+                                <td class="px-4 py-3">
+                                    <span
+                                        class="px-2 py-1 rounded text-xs {% if profile.user.is_active %}bg-emerald-100 text-emerald-800{% else %}bg-amber-100 text-amber-800{% endif %}">
+                                        {% if profile.user.is_active %}Active{% else %}Inactive{% endif %}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <a href="#" class="text-sky-600 mr-3" title="Edit">✎</a>
+                                    <a href="#" class="text-rose-600" title="Suspend">⛔</a>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="px-4 py-3 text-center text-slate-500">
+                                    No agents found
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4 flex items-center justify-between text-sm text-slate-500">
+                    <div>Showing {{ agent_list|length }} agents</div>
+                    <div class="flex gap-2">
+                        <button id="agentsPrev" class="px-3 py-1 rounded bg-white/10">Prev</button>
+                        <button id="agentsNext" class="px-3 py-1 rounded bg-white/10">Next</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Hospitals Section -->
+            <section id="sec-hospitals" class="hidden">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-semibold">Hospitals</h2>
+                    <button id="addHospitalBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg">+ Add
+                        Hospital</button>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-200 dark:border-slate-700">
+                                <th class="text-left py-2">#</th>
+                                <th class="text-left py-2">Hospital Name</th>
+                                <th class="text-left py-2">Email</th>
+                                <th class="text-left py-2">Location</th>
+                                <th class="text-left py-2">Status</th>
+                                <th class="text-left py-2 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hospitalTableBody">
+                            {% for hospital in hospital_list %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ hospital.user.get_full_name }}</td>
+                                <td>{{ hospital.user.email }}</td>
+                                <td>{{ hospital.address|default:"N/A" }}</td>
+                                <td>
+                                    {% if hospital.is_active %}
+                                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">Active</span>
+                                    {% else %}
+                                    <span class="bg-red-100 text-rose-700 px-2 py-1 rounded text-xs">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-right">
+                                    <button onclick="editHospital({{ hospital.id }})"
+                                        class="text-indigo-600 hover:underline">Edit</button>
+                                    {% if hospital.is_active %}
+                                    <button onclick="suspendHospital({{ hospital.id }})"
+                                        class="text-rose-600 hover:underline ml-2">Suspend</button>
+                                    {% else %}
+                                    <button onclick="activateHospital({{ hospital.id }})"
+                                        class="text-green-600 hover:underline ml-2">Activate</button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4">No hospitals found.</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+
+                    </table>
+                </div>
+            </section>
+
+
+            <!-- CLAIMS -->
+            <section id="sec-claims" class="hidden">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold">Claims</h2>
+                    <div class="text-sm text-slate-500">Manage claim approvals</div>
+                </div>
+
+                <div class="card overflow-x-auto">
+                    <table class="min-w-full text-sm">
+                        <thead class="bg-slate-100 dark:bg-slate-800/50">
+                            <tr>
+                                <th class="px-4 py-3 text-left">#</th>
+                                <th class="px-4 py-3 text-left">User</th>
+                                <th class="px-4 py-3 text-left">Hospital</th>
+                                <th class="px-4 py-3 text-left">Amount</th>
+                                <th class="px-4 py-3 text-left">Date</th>
+                                <th class="px-4 py-3 text-left">Status</th>
+                                <th class="px-4 py-3 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="claimsTbody" class="divide-y">
+                            {% for claim in claims_list %}
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60">
+                                <td class="px-4 py-3">{{ claim.id }}</td>
+                                <td class="px-4 py-3">{{ claim.user }}</td>
+                                <td class="px-4 py-3">{{ claim.hospital }}</td>
+                                <td class="px-4 py-3">KES {{ claim.amount|floatformat:2 }}</td>
+                                <td class="px-4 py-3">{{ claim.date|date:"Y-m-d" }}</td>
+                                <td class="px-4 py-3"><span class="px-2 py-1 rounded text-xs 
+                    {% if claim.status == 'Approved' %}bg-emerald-100 text-emerald-800
+                    {% elif claim.status == 'Pending' %}bg-amber-100 text-amber-800
+                    {% else %}bg-rose-100 text-rose-800{% endif %}">{{ claim.status }}</span></td>
+                                <td class="px-4 py-3">
+                                    <button class="text-sky-600 mr-2" onclick="viewClaim({{ claim.id }})">🔎</button>
+                                    {% if claim.status == 'Pending' %}
+                                    <button class="text-emerald-600 mr-2"
+                                        onclick="approveClaim({{ claim.id }})">✔</button>
+                                    <button class="text-rose-600" onclick="rejectClaim({{ claim.id }})">✖</button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="px-4 py-3 text-center text-slate-500">No claims found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- REPORTS -->
+            <section id="sec-reports" class="hidden">
+                <h2 class="text-xl font-semibold mb-4">Reports</h2>
+                <div class="card p-4">
+                    <div class="flex gap-2 mb-4">
+                        <a href="" class="px-3 py-2 bg-indigo-600 text-white rounded">Export Users CSV</a>
+                        <a href="" class="px-3 py-2 bg-sky-600 text-white rounded">Export Claims CSV</a>
+                    </div>
+                    <div class="text-sm text-slate-600">Download quick sample reports (client-side) — wire to API for
+                        production exports.</div>
+                </div>
+            </section>
+
+            <!-- SETTINGS -->
+            <section id="sec-settings" class="hidden">
+                <h2 class="text-xl font-semibold mb-4">Settings</h2>
+                <div class="card p-4">
+                    <label class="block text-sm text-slate-600 mb-2">Site title</label>
+                    <input id="siteTitle" class="border rounded px-3 py-2 w-full mb-3" value="HealthInsure Admin" />
+                    <div class="text-sm text-slate-500">App settings (placeholder)</div>
+                </div>
+            </section>
+    </div>
+    </main>
+    </div>
+
+    <!-- MODALS (Add/Edit / Confirm) -->
+    <div id="modalRoot" class="fixed inset-0 hidden items-center justify-center z-50 bg-black/50 p-4">
+        <div id="modalCard" class="bg-white dark:bg-slate-800 rounded-2xl p-6 w-full max-w-2xl"></div>
+    </div>
+
+    <script>
+        /**************************************************************************
+         * Demo data + state
+         ***************************************************************************/
+        const ROLES = ['Administrator', 'Agent', 'Hospital', 'Claims Officer', 'Report Officer', 'Tax Inspector', 'Client'];
+
+        // ui state
+        let activeSection = 'home';
+        let usersPage = 1;
+        let usersPerPage = 8;
+        let usersFilterRole = 'all';
+        let chartLine, chartDonut;
+
+        /**************************************************************************
+         * small helpers
+         ***************************************************************************/
+        const $ = sel => document.querySelector(sel);
+        const $$ = sel => Array.from(document.querySelectorAll(sel));
+        function formatKES(n) { return n.toLocaleString('en-KE'); }
+        function openModal(html) { $('#modalCard').innerHTML = html; $('#modalRoot').classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+        function closeModal() { $('#modalRoot').classList.add('hidden'); $('#modalCard').innerHTML = ''; document.body.style.overflow = ''; }
+
+        /**************************************************************************
+         * Sidebar / nav wiring
+         ***************************************************************************/
+        function setActiveSection(name) {
+            activeSection = name;
+            ['home', 'users', 'agents', 'hospitals', 'claims', 'reports', 'settings'].forEach(s => {
+                const el = document.getElementById('sec-' + s);
+                if (el) el.classList.toggle('hidden', s !== name);
+            });
+            $$('.menu-link').forEach(btn => btn.classList.toggle('bg-white/10', btn.dataset.section === name));
+        }
+
+
+        $$('.menu-link').forEach(b => b.addEventListener('click', () => setActiveSection(b.dataset.section)));
+        $('#menuToggle')?.addEventListener('click', () => $('#sidebar').classList.toggle('hidden'));
+        $('#themeBtn')?.addEventListener('click', () => document.documentElement.classList.toggle('dark'));
+        $('#profileBtn')?.addEventListener('click', () => $('#profileMenu').classList.toggle('hidden'));
+        $('#addUserBtn')?.addEventListener('click', () => openAddUserForm());
+        $('#openAdd')?.addEventListener('click', () => openAddUserForm());
+
+        /* search */
+        $('#globalSearch')?.addEventListener('input', (e) => {
+            const v = e.target.value.trim();
+            $('#searchClear').classList.toggle('hidden', !v);
+        });
+        $('#searchClear')?.addEventListener('click', () => { $('#globalSearch').value = ''; $('#searchClear').classList.add('hidden'); });
+
+        /**************************************************************************
+         * Home / KPIs / Charts
+         ***************************************************************************/
+        function createCharts() {
+            // line (bigger, gradient)
+            const lineCtx = document.getElementById('chart-line').getContext('2d');
+            const gradient = lineCtx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(14,165,233,0.16)');
+            gradient.addColorStop(1, 'rgba(14,165,233,0.02)');
+
+            chartLine = new Chart(lineCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+                    datasets: [{
+                        label: 'Claims (KES)',
+                        data: [12000, 18000, 15000, 21000, 24000, 20000],
+                        borderColor: '#0ea5e9',
+                        backgroundColor: gradient,
+                        tension: 0.32,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: getComputedStyle(document.documentElement).color } },
+                        y: { grid: { color: 'rgba(15,23,42,0.04)' }, ticks: { callback: v => 'KES ' + Number(v).toLocaleString() } }
+                    }
+                }
+            });
+
+            // donut
+           const statusCounts = [
+    {% if claims_approved %} {{ claims_approved }} {% else %} 0 {% endif %},
+    {% if claims_pending %} {{ claims_pending }} {% else %} 0 {% endif %},
+    {% if claims_rejected %} {{ claims_rejected }} {% else %} 0 {% endif %}
+];
+
+        const donutCtx = document.getElementById('chart-donut').getContext('2d');
+        chartDonut = new Chart(donutCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Approved', 'Pending', 'Rejected'],
+                datasets: [{ data: statusCounts, backgroundColor: ['#10b981', '#f59e0b', '#ef4444'], hoverOffset: 8 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+
+        refreshStatusLegend();
+  }
+
+        function refreshStatusLegend() {
+            const legend = $('#statusLegend'); legend.innerHTML = '';
+            const labels = chartDonut.data.labels;
+            const data = chartDonut.data.datasets[0].data;
+            const colors = chartDonut.data.datasets[0].backgroundColor;
+            labels.forEach((l, i) => {
+                const row = document.createElement('div'); row.className = 'flex items-center gap-2 mb-1';
+                row.innerHTML = `<span class="w-3 h-3 rounded" style="background:${colors[i]}"></span><div class="text-sm">${l} — ${data[i]}</div>`;
+                legend.appendChild(row);
+            });
+        }
+
+        /**************************************************************************
+         * Users table (filter, pagination, add/edit)
+         ***************************************************************************/
+        // Add user flow - modal with role selection
+        function openAddUserForm() {
+            openModal(`
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold">Add New User</h3>
+        </div>
+        <form id="formAddUser" class="grid grid-cols-1 gap-3">
+          <input id="u_name" class="border px-3 py-2 rounded" placeholder="Full name" required />
+          <input id="u_email" class="border px-3 py-2 rounded" placeholder="Email" type="email" required />
+          <select id="u_role" class="border px-3 py-2 rounded">${ROLES.map(r => `<option>${r}</option>`).join('')}</select>
+          <select id="u_status" class="border px-3 py-2 rounded"><option>Active</option><option>Pending</option></select>
+          <div class="flex items-center justify-end gap-2 mt-2">
+            <button type="button" onclick="closeModal()" class="px-3 py-2 rounded bg-slate-200">Cancel</button>
+            <button class="px-3 py-2 rounded bg-indigo-600 text-white">Create</button>
+          </div>
+        </form>
+      </div>
+    `);
+
+            document.getElementById('formAddUser').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const name = $('#u_name').value.trim();
+                const email = $('#u_email').value.trim();
+                const role = $('#u_role').value;
+                const status = $('#u_status').value;
+                if (!name || !email) { alert('Name & email required'); return; }
+
+                // Submit form via AJAX or redirect
+                alert('User creation would be handled by Django backend');
+                closeModal();
+            });
+        }
+
+        function openEditUser(id) {
+            // This would fetch user data from Django backend via AJAX
+            alert('Edit user functionality would fetch data from Django backend');
+        }
+
+        function confirmSuspend(id) {
+            openModal(`
+      <div>
+        <h3 class="text-lg font-semibold mb-2">Suspend user?</h3>
+        <p class="text-sm text-slate-500 mb-4">This will mark the user as Suspended (you can reactivate later).</p>
+        <div class="flex justify-end gap-2">
+          <button onclick="closeModal()" class="px-3 py-2 rounded bg-slate-200">Cancel</button>
+          <button class="px-3 py-2 rounded bg-rose-600 text-white" onclick="suspendUser(${id})">Suspend</button>
+        </div>
+      </div>
+    `);
+        }
+
+        function suspendUser(id) {
+            alert('User suspension would be handled by Django backend');
+            closeModal();
+        }
+
+        /**************************************************************************
+         * Claims table + actions
+         ***************************************************************************/
+        function viewClaim(id) {
+            // This would fetch claim data from Django backend via AJAX
+            alert('View claim functionality would fetch data from Django backend');
+        }
+
+        function approveClaim(id) {
+            alert('Claim approval would be handled by Django backend');
+        }
+
+        function rejectClaim(id) {
+            alert('Claim rejection would be handled by Django backend');
+        }
+
+        /**************************************************************************
+         * Init
+         ***************************************************************************/
+        document.addEventListener('DOMContentLoaded', () => {
+            setActiveSection('home');
+            createCharts();
+            document.getElementById('siteTitle')?.addEventListener('change', (e) => document.title = e.target.value);
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{% if form.instance.pk %}Edit Claim{% else %}File a Claim{% endif %}</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">{% if form.instance.pk %}Resubmit{% else %}Submit{% endif %}</button>
+</form>
+
+<a href="{% url 'claim_list' %}" class="btn btn-secondary mt-3">Back to List</a>
+{% endblock %}

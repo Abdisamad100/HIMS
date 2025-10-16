@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Claims</h1>
+
+{% if user.profile.role == "hospital" %}
+    <a href="{% url 'hospital_create_claim' %}" class="btn btn-primary">File New Claim</a>
+{% endif %}
+
+<table class="table table-striped mt-3">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Member</th>
+            <th>Hospital</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for claim in claims %}
+        <tr>
+            <td>{{ claim.id }}</td>
+            <td>{{ claim.member.user.get_full_name }}</td>
+            <td>{{ claim.hospital.username }}</td>
+            <td>{{ claim.amount }}</td>
+            <td>{{ claim.status }}</td>
+            <td>
+                <a href="{% url 'claim_detail' claim.pk %}" class="btn btn-sm btn-info">View</a>
+
+                {% if user.profile.role == "hospital" and claim.status not in non_editable_status %}
+                    <a href="{% url 'hospital_edit_claim' claim.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                {% elif user.profile.role == "claim_officer" and claim.status in officer_action_status %}
+                    <a href="{% url 'claim_officer_action' claim.pk 'approve' %}" class="btn btn-sm btn-success">Approve</a>
+                    <a href="{% url 'claim_officer_action' claim.pk 'reject' %}" class="btn btn-sm btn-danger">Reject</a>
+                    <a href="{% url 'claim_officer_action' claim.pk 'forward' %}" class="btn btn-sm btn-warning">Forward</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No claims found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

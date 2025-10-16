@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="p-6">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-semibold">User Management</h1>
+    <div class="flex items-center gap-2">
+      <select id="roleFilter" class="px-3 py-2 rounded border">
+        <option value="all">All roles</option>
+        <option>Admin</option>
+        <option>Agent</option>
+        <option>Hospital</option>
+        <option>Claims Officer</option>
+        <option>Report Officer</option>
+        <option>Tax Inspector</option>
+        <option>Customer</option>
+      </select>
+      <a href="{% url 'register_user' %}" 
+         class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
+        ＋ Add User
+      </a>
+    </div>
+  </div>
+
+  <div class="card overflow-x-auto">
+    <table class="min-w-full text-sm">
+      <thead class="bg-slate-100 dark:bg-slate-800/50">
+        <tr>
+          <th class="px-4 py-3 text-left">Name</th>
+          <th class="px-4 py-3 text-left">Role</th>
+          <th class="px-4 py-3 text-left">Email</th>
+          <th class="px-4 py-3 text-left">Status</th>
+          <th class="px-4 py-3 text-left">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y">
+        {% for profile in users %}
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60">
+          <td class="px-4 py-3">{{ profile.user.get_full_name|default:profile.user.username }}</td>
+          <td class="px-4 py-3">
+            <span class="px-2 py-1 rounded text-xs bg-slate-100 dark:bg-slate-700">
+              {{ profile.get_role_display }}
+            </span>
+          </td>
+          <td class="px-4 py-3">{{ profile.user.email }}</td>
+          <td class="px-4 py-3">
+            <span class="px-2 py-1 rounded text-xs 
+              {% if profile.user.is_active %}
+                bg-emerald-100 text-emerald-800
+              {% else %}
+                bg-amber-100 text-amber-800
+              {% endif %}">
+              {% if profile.user.is_active %}Active{% else %}Inactive{% endif %}
+            </span>
+          </td>
+          <td class="px-4 py-3">
+            <a href="#" class="text-sky-600 mr-3" title="Edit">✎</a>
+            <a href="#" class="text-rose-600" title="Suspend">⛔</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="px-4 py-3 text-center text-slate-500">
+            No users found
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-4 flex items-center justify-between text-sm text-slate-500">
+    <div>Showing {{ users|length }} users</div>
+  </div>
+</div>
+{% endblock %}

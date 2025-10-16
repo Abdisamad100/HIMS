@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Claims Dashboard</h1>
+
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-header">Total Claims</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ total_claims }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-header">Pending</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ total_pending }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">Approved</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ total_approved }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-header">Rejected</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ total_rejected }}</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-2">
+    <div class="col-md-3">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-header">Forwarded</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ total_forwarded }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-secondary mb-3">
+            <div class="card-header">Total Amount</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ total_amount }}</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="mt-4">Recent Claims</h2>
+<table class="table table-striped mt-2">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Member</th>
+            <th>Hospital</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for claim in claims|slice:":10" %}
+        <tr>
+            <td>{{ claim.id }}</td>
+            <td>{{ claim.member.user.get_full_name }}</td>
+            <td>{{ claim.hospital.username }}</td>
+            <td>{{ claim.amount }}</td>
+            <td>{{ claim.status }}</td>
+            <td>
+                <a href="{% url 'claim_detail' claim.pk %}" class="btn btn-sm btn-info">View</a>
+
+                {% if role == "hospital" and claim.status not in non_editable_status %}
+                    <a href="{% url 'hospital_edit_claim' claim.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                {% elif role == "claim_officer" and claim.status in officer_action_status %}
+                    <a href="{% url 'claim_officer_action' claim.pk 'approve' %}" class="btn btn-sm btn-success">Approve</a>
+                    <a href="{% url 'claim_officer_action' claim.pk 'reject' %}" class="btn btn-sm btn-danger">Reject</a>
+                    <a href="{% url 'claim_officer_action' claim.pk 'forward' %}" class="btn btn-sm btn-warning">Forward</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No claims found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
