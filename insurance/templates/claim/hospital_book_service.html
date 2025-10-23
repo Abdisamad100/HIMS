@@ -1,0 +1,19 @@
+<div class="card">
+  <h3>Step 2: Record Service / Treatment</h3>
+  <form method="post">
+    {% csrf_token %}
+    <p><b>Member:</b> {{ member_policy.member.user.get_full_name }}</p>
+    <p><b>Policy:</b> {{ member_policy.policy.policy_number }} ({{ member_policy.policy.name }})</p>
+
+    <label>Service Date</label>
+    <input type="date" name="date_of_service" required class="form-control">
+
+    <label>Notes</label>
+    <textarea name="notes" class="form-control" placeholder="Enter treatment details"></textarea>
+
+    <label>Amount (USD)</label>
+    <input type="number" name="amount" step="0.01" class="form-control" required>
+
+    <button type="submit" class="btn">Save and Continue</button>
+  </form>
+</div>

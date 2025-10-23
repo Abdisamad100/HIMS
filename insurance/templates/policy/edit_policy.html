@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white dark:bg-slate-800 p-6 rounded-lg shadow">
+    <h2 class="text-2xl font-semibold mb-4">Edit Policy — {{ policy.name }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <div class="mt-4 flex justify-between">
+            <a href="{% url 'admin_dashboard' %}" class="text-slate-600 hover:underline">← Back</a>
+            <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+                Save Changes
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

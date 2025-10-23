@@ -12,239 +12,583 @@
             --card: #fff;
             --muted: #8b98a5;
             --accent: #0b9a84;
+            --accent-light: #eef6f4;
             --danger: #ff6b6b;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --info: #2563eb;
+            --purple: #8b5cf6;
             --shadow: 0 8px 24px rgba(14, 30, 37, 0.06);
+            --shadow-hover: 0 12px 28px rgba(14, 30, 37, 0.12);
+            --radius: 12px;
+            --transition: all 0.3s ease;
             font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
         }
 
         * {
-            box-sizing: border-box
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            margin: 0;
             background: var(--bg);
-            color: #0f1720
+            color: #0f1720;
+            line-height: 1.5;
         }
 
         .app {
             display: flex;
-            min-height: 100vh
+            min-height: 100vh;
         }
 
+        /* Sidebar */
         .sidebar {
-            width: 220px;
+            width: 260px;
             background: linear-gradient(180deg, #0d3b36, #0b2f2b);
             color: #fff;
-            padding: 20px;
-            border-right: 1px solid rgba(255, 255, 255, 0.04)
+            padding: 24px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 0 24px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 16px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #fff url('logo.png') center/cover no-repeat;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .sidebar h2 {
-            margin: 6px 0 18px;
-            font-size: 18px
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .nav {
+            padding: 0 16px;
         }
 
         .nav a {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             align-items: center;
-            padding: 10px;
-            border-radius: 8px;
-            color: rgba(255, 255, 255, 0.9);
+            padding: 12px 16px;
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.85);
             text-decoration: none;
-            margin-bottom: 6px
+            margin-bottom: 4px;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav a:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
         }
 
         .nav a.active {
-            background: rgba(255, 255, 255, 0.06)
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+        }
+
+        .user-info {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            padding: 20px 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+        }
+
+        /* Main Content */
         .main {
             flex: 1;
-            padding: 24px
+            padding: 24px;
+            margin-left: 260px;
+            transition: var(--transition);
         }
 
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 18px
+            margin-bottom: 24px;
         }
 
         .brand {
             display: flex;
-            gap: 12px;
-            align-items: center
+            gap: 16px;
+            align-items: center;
         }
 
-        .logo {
-            width: 46px;
-            height: 46px;
-            border-radius: 8px;
+        .mobile-logo {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
             background: #fff url('logo.png') center/cover no-repeat;
-            display: inline-block
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
             margin: 0;
-            font-size: 20px
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 14px;
+            margin-top: 4px;
         }
 
         .quick-actions {
             display: flex;
-            gap: 10px
+            gap: 12px;
         }
 
         .btn {
             background: var(--accent);
             color: #fff;
-            padding: 10px 12px;
+            padding: 10px 16px;
             border-radius: 10px;
             border: none;
             cursor: pointer;
-            font-weight: 600
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(11, 154, 132, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(11, 154, 132, 0.3);
         }
 
         .btn.ghost {
             background: transparent;
             color: var(--accent);
-            border: 1px solid rgba(11, 154, 132, 0.12)
+            border: 1px solid rgba(11, 154, 132, 0.2);
+            box-shadow: none;
         }
 
-        .layout {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 16px
+        .btn.ghost:hover {
+            background: var(--accent-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(11, 154, 132, 0.1);
         }
 
-        .card {
-            background: var(--card);
-            padding: 16px;
-            border-radius: 12px;
-            box-shadow: var(--shadow)
-        }
-
+        /* KPIs */
         .kpis {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 12px
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent);
         }
 
         .kpi .label {
             color: var(--muted);
-            font-size: 13px
+            font-size: 14px;
+            margin-bottom: 8px;
         }
 
         .kpi .value {
-            font-size: 22px;
-            font-weight: 700
+            font-size: 28px;
+            font-weight: 700;
+            color: #0f1720;
+        }
+
+        /* Verification Section */
+        .verification-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
         }
 
         .search-row {
             display: flex;
-            gap: 8px;
-            margin-bottom: 12px
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .search-row input {
             flex: 1;
-            padding: 10px;
+            padding: 12px 16px;
             border-radius: 10px;
-            border: 1px solid #e6edf0
+            border: 1px solid #e6edf0;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .search-row input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(11, 154, 132, 0.1);
         }
 
         .search-row button {
-            padding: 10px 12px;
+            padding: 12px 16px;
             border-radius: 10px;
             border: none;
-            background: #eef6f4;
+            background: var(--accent-light);
             color: var(--accent);
-            cursor: pointer
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .search-row button:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .verification-result {
+            padding: 16px;
+            border-radius: 10px;
+            background: var(--accent-light);
+            color: var(--accent);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .verification-result.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        /* Layout */
+        .layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--card);
+            padding: 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #0f1720;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 10px;
+            border: 1px solid #f1f5f7;
         }
 
         .table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 8px
         }
 
         th,
         td {
-            padding: 10px;
+            padding: 14px 16px;
             border-bottom: 1px solid #f1f5f7;
-            text-align: left
+            text-align: left;
+            white-space: nowrap;
         }
 
         thead th {
             color: var(--muted);
-            font-size: 13px
+            font-size: 13px;
+            font-weight: 600;
+            background: #f8fafc;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
         }
 
         .status {
-            font-weight: 700
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: inline-block;
         }
 
         .status.pending {
-            color: #f59e0b
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
         }
 
         .status.approved {
-            color: #10b981
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
         }
 
         .status.reimbursed {
-            color: #2563eb
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--info);
         }
 
         .status.rejected {
-            color: var(--danger)
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
         }
 
         .status.forwarded {
-            color: #8b5cf6
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--purple);
         }
 
+        /* Form */
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
         }
 
         label {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--muted);
             display: block;
-            margin-bottom: 6px
+            margin-bottom: 8px;
+            font-weight: 500;
         }
 
         input,
         select,
         textarea {
             width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #e6edf0
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid #e6edf0;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(11, 154, 132, 0.1);
         }
 
         .small {
             font-size: 13px;
-            color: var(--muted)
+            color: var(--muted);
         }
 
-        @media (max-width:900px) {
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        /* Chart */
+        .chart-container {
+            position: relative;
+            height: 200px;
+            width: 100%;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 24px;
+            font-size: 13px;
+            color: var(--muted);
+            text-align: center;
+            padding: 16px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 80px;
+                padding: 20px 0;
+            }
+
+            .sidebar-header {
+                padding: 0 16px 20px;
+            }
+
+            .logo-container span,
+            .sidebar h2,
+            .nav a span:last-child,
+            .user-info span:first-child {
+                display: none;
+            }
+
+            .nav a {
+                justify-content: center;
+                padding: 14px;
+            }
+
+            .nav-icon {
+                width: auto;
+            }
+
+            .main {
+                margin-left: 80px;
+            }
+        }
+
+        @media (max-width: 900px) {
             .layout {
-                grid-template-columns: 1fr
+                grid-template-columns: 1fr;
+            }
+
+            .kpis {
+                grid-template-columns: 1fr;
             }
 
             .sidebar {
-                display: none
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .mobile-logo {
+                display: block;
             }
 
             .brand h1 {
-                font-size: 18px
+                font-size: 20px;
             }
+
+            .mobile-menu-btn {
+                display: block;
+                background: none;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                color: var(--accent);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .search-row {
+                flex-direction: column;
+            }
+
+            .quick-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .brand {
+                width: 100%;
+            }
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--accent);
+            margin-right: 16px;
+        }
+
+        /* Animation for verification result */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease;
         }
     </style>
 </head>
@@ -252,112 +596,165 @@
 <body>
     <div class="app">
         <aside class="sidebar">
-            <div class="logo"></div>
-            <h2>Shafi Hospital</h2>
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <div class="logo"></div>
+                    <span>{{ user.username }} Hospital</span>
+                </div>
+                <h2>Provider Portal</h2>
+            </div>
+
             <nav class="nav">
-                <a href="#" class="active">🏠 Dashboard</a>
-                <a href="#">🔎 Verify Patient</a>
-                <a href="#">📝 Submit Claim</a>
-                <a href="#">💳 Reimbursements</a>
-                <a href="#">📄 Reports</a>
-                <a href="#">⚙️ Settings</a>
+                <a href="{% url 'hospital_dashboard' %}" class="{% if request.path == '/hospital/dashboard/' %}active{% endif %}">
+                    <span class="nav-icon">🏠</span>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="{% url 'verify_member_policy' %}" class="{% if 'verify' in request.path %}active{% endif %}">
+                    <span class="nav-icon">🔎</span>
+                    <span>Verify Patient</span>
+                </a>
+
+                <a href="{% url 'hospital_add_claim' %}" class="{% if 'claim/add' in request.path %}active{% endif %}">
+                    <span class="nav-icon">📝</span>
+                    <span>Submit Claim</span>
+                </a>
+
+                <a href="{% url 'claim_list' %}" class="{% if 'claims' in request.path and not 'add' in request.path %}active{% endif %}">
+                    <span class="nav-icon">💳</span>
+                    <span>Reimbursements</span>
+                </a>
+
+                <a href="#" class="{% if 'reports' in request.path %}active{% endif %}">
+                    <span class="nav-icon">📄</span>
+                    <span>Reports</span>
+                </a>
+
+                <a href="#" class="{% if 'settings' in request.path %}active{% endif %}">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
             </nav>
-            <div style="position:absolute;bottom:20px;padding:20px;color:rgba(255,255,255,0.7);font-size:13px">
-                Logged in as: <strong>{{ user.username }}</strong>
+
+            <div class="user-info">
+                <span>Logged in as:</span> <strong>{{ user.username }}</strong>
             </div>
         </aside>
 
         <main class="main">
             <header>
                 <div class="brand">
-                    <div class="logo"></div>
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+                    <div class="mobile-logo"></div>
                     <div>
-                        <h1>Provider Dashboard — {{ user.username }}</h1>
-                        <div class="small">Verify patients, submit claims, track reimbursements</div>
+                        <h1>Provider Dashboard</h1>
+                        <div class="subtitle">Welcome, {{ user.username }} • Verify patients, submit claims, track reimbursements</div>
                     </div>
                 </div>
                 <div class="quick-actions">
-                    <button class="btn" id="btnNewClaim">+ Submit Claim</button>
-                    <button class="btn ghost" id="btnExport">Export CSV</button>
+                    <button class="btn" id="btnNewClaim">
+                        <span>+</span>
+                        <span>Submit Claim</span>
+                    </button>
+                    <button class="btn ghost" id="btnExport">
+                        <span>📤</span>
+                        <span>Export CSV</span>
+                    </button>
                 </div>
             </header>
 
             <!-- KPIs -->
-            <section class="card">
-                <div class="kpis">
-                    <div class="card kpi">
-                        <div class="label">Total Claims</div>
-                        <div class="value" id="totalClaims">{{ total_claims }}</div>
-                    </div>
-                    <div class="card kpi">
-                        <div class="label">Pending Claims</div>
-                        <div class="value" id="pendingClaims">{{ total_pending }}</div>
-                    </div>
-                    <div class="card kpi">
-                        <div class="label">Total Amount (USD)</div>
-                        <div class="value" id="totalAmount">${{ total_amount }}</div>
-                    </div>
+            <section class="kpis">
+                <div class="kpi-card kpi">
+                    <div class="label">Total Claims</div>
+                    <div class="value" id="totalClaims">{{ total_claims }}</div>
                 </div>
+                <div class="kpi-card kpi">
+                    <div class="label">Pending Claims</div>
+                    <div class="value" id="pendingClaims">{{ total_pending }}</div>
+                </div>
+                <div class="kpi-card kpi">
+                    <div class="label">Total Amount (USD)</div>
+                    <div class="value" id="totalAmount">${{ total_amount }}</div>
+                </div>
+            </section>
+
+            <!-- Verification Section -->
+            <section class="verification-card">
                 <div class="search-row">
                     <input type="text" id="searchInput" placeholder="Search by policy #, patient name or national ID" />
-                    <button id="btnVerify">Verify</button>
+                    <button id="btnVerify">Verify Patient</button>
                     <button class="btn ghost" id="btnClear">Clear</button>
                 </div>
-                <div id="verificationResult" class="small">Enter a policy number or ID and click Verify to see coverage
-                    details.</div>
+                <div id="verificationResult" class="verification-result">
+                    Enter a policy number or ID and click Verify to see coverage details.
+                </div>
             </section>
 
             <!-- Claims + Quick Claim -->
-            <div class="layout" style="margin-top:16px">
+            <div class="layout">
                 <div>
                     <div class="card">
-                        <h3 style="margin-top:0">Recent Claims</h3>
-                        <table class="table" id="claimsTable">
-                            <thead>
-                                <tr>
-                                    <th>Claim ID</th>
-                                    <th>Patient</th>
-                                    <th>Policy No.</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for claim in claims %}
-                                <tr>
-                                    <td>{{ claim.id }}</td>
-                                    <td>{{ claim.patient_name }}</td>
-                                    <td>{{ claim.policy_number }}</td>
-                                    <td>${{ claim.amount }}</td>
-                                    <td class="status {{ claim.status|lower }}">{{ claim.status }}</td>
-                                    <td>
-                                        {% if claim.status not in non_editable_status %}
-                                        <button class="btn ghost" data-id="{{ claim.id }}">View</button>
-                                        {% else %}
-                                        <span class="small">Read Only</span>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="6" style="text-align: center;">No claims found</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                        <h3>Recent Claims</h3>
+                        <div class="table-container">
+                            <table class="table" id="claimsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Claim ID</th>
+                                        <th>Patient</th>
+                                        <th>Policy No.</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for claim in claims %}
+                                    <tr>
+                                        <td>{{ claim.id }}</td>
+                                        <td>{{ claim.patient_name }}</td>
+                                        <td>{{ claim.policy_number }}</td>
+                                        <td>${{ claim.amount }}</td>
+                                        <td><span class="status {{ claim.status|lower }}">{{ claim.status }}</span></td>
+                                        <td>
+                                            {% if claim.status not in non_editable_status %}
+                                            <button class="btn ghost" data-id="{{ claim.id }}">View</button>
+                                            {% else %}
+                                            <span class="small">Read Only</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="6" style="text-align: center;">No claims found</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
-                    <div class="card" style="margin-top:12px">
-                        <h3 style="margin-top:0">Submit Claim (Quick)</h3>
-                        <form method="post" action="" enctype="multipart/form-data">
+                    <div class="card" style="margin-top:24px">
+                        <h3>📝 Submit Claim (Quick)</h3>
+
+                        <form method="post" action="{% url 'hospital_add_claim' %}" enctype="multipart/form-data" id="quickClaimForm">
                             {% csrf_token %}
+
+                            <!-- Policy & Patient Info -->
                             <div class="form-row">
-                                <div><label>Policy Number</label><input name="policy_number" id="quick_policy" placeholder="P-2024-001" required /></div>
-                                <div><label>Patient Name</label><input name="patient_name" id="quick_patient" placeholder="John Doe" required /></div>
+                                <div class="form-group">
+                                    <label>Policy Number</label>
+                                    <input name="policy_number" id="quick_policy" placeholder="P-2024-001" required />
+                                </div>
+                                <div class="form-group">
+                                    <label>Patient Name</label>
+                                    <input name="patient_name" id="quick_patient" placeholder="John Doe" required />
+                                </div>
                             </div>
-                            <div style="margin-top:8px" class="form-row">
-                                <div>
+
+                            <!-- Claim Details -->
+                            <div class="form-row">
+                                <div class="form-group">
                                     <label>Claim Type</label>
                                     <select name="claim_type" id="quick_type">
                                         <option>Outpatient</option>
@@ -366,17 +763,23 @@
                                         <option>Maternity</option>
                                     </select>
                                 </div>
-                                <div><label>Amount (USD)</label><input name="amount" id="quick_amount" type="number" value="120" required /></div>
+                                <div class="form-group">
+                                    <label>Amount (USD)</label>
+                                    <input name="amount" id="quick_amount" type="number" placeholder="120" required />
+                                </div>
                             </div>
-                            <div style="margin-top:8px">
+
+                            <!-- File Upload -->
+                            <div class="form-group">
                                 <label>Attach Documents</label>
                                 <input name="documents" id="quick_files" type="file" multiple />
                                 <div class="small">Upload treatment notes, invoices, or lab reports (PDF, JPG, PNG)</div>
                             </div>
 
-                            <div style="margin-top:10px;display:flex;gap:8px">
+                            <!-- Buttons -->
+                            <div class="form-actions">
                                 <button type="submit" class="btn" id="btnQuickSubmit">Submit Claim</button>
-                                <button type="reset" class="btn ghost" id="btnQuickReset">Reset</button>
+                                <button type="reset" class="btn ghost">Reset</button>
                             </div>
                         </form>
                     </div>
@@ -384,112 +787,173 @@
 
                 <aside>
                     <div class="card">
-                        <h3 style="margin-top:0">Claims by Status</h3>
-                        <canvas id="claimsByStatus" style="height:200px"></canvas>
+                        <h3>Claims by Status</h3>
+                        <div class="chart-container">
+                            <canvas id="claimsByStatus"></canvas>
+                        </div>
                     </div>
 
-                    <div class="card" style="margin-top:12px">
-                        <h3 style="margin-top:0">Reimbursements</h3>
-                        <div class="small" style="margin-bottom:8px">Last settlement: <strong>$4,200</strong> (3 days
-                            ago)</div>
+                    <div class="card" style="margin-top:24px">
+                        <h3>Reimbursements</h3>
+                        <div class="small" style="margin-bottom:16px">Last settlement: <strong>$4,200</strong> (3 days ago)</div>
                         <button class="btn" id="btnRequestReconcile">Request Reconciliation</button>
                     </div>
                 </aside>
             </div>
 
-            <footer style="margin-top:18px;font-size:13px;color:var(--muted)">Provider portal • Shafi Hospital Demo UI
+            <footer>
+                Provider portal • Shafi Hospital Demo UI
             </footer>
         </main>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Status colors for chart
+        // ============================
+        // Mobile Menu Toggle
+        // ============================
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.querySelector('.sidebar');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        // ============================
+        // Chart Configuration
+        // ============================
         const statusColors = {
             'Pending': '#f59e0b',
             'Approved': '#10b981',
-            'Rejected': '#ff6b6b',
+            'Rejected': '#ef4444',
             'Forwarded': '#8b5cf6'
         };
 
-        // Claims by Status Chart
         const statusCtx = document.getElementById('claimsByStatus').getContext('2d');
-        const statusChart = new Chart(statusCtx, {
+        new Chart(statusCtx, {
             type: 'doughnut',
             data: {
                 labels: ['Pending', 'Approved', 'Rejected', 'Forwarded'],
                 datasets: [{
                     data: [
-                        {{ total_pending }},
-                        {{ total_approved }},
-                        {{ total_rejected }},
-                        {{ total_forwarded }}
+                        {{ total_pending|default:0 }},
+                        {{ total_approved|default:0 }},
+                        {{ total_rejected|default:0 }},
+                        {{ total_forwarded|default:0 }}
                     ],
                     backgroundColor: [
                         statusColors.Pending,
                         statusColors.Approved,
                         statusColors.Rejected,
                         statusColors.Forwarded
-                    ]
+                    ],
+                    borderWidth: 0
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 14,
+                            font: { size: 12 },
+                            padding: 20
+                        }
                     }
-                }
+                },
+                cutout: '70%'
             }
         });
 
-        // Verification functionality
-        document.getElementById('btnVerify').addEventListener('click', () => {
-            const q = document.getElementById('searchInput').value.trim();
-            const el = document.getElementById('verificationResult');
-            if (!q) { alert('Enter a policy number or ID'); return; }
-            const found = (q.toUpperCase().startsWith('P-')) ? { policy: q.toUpperCase(), holder: 'Ali Hassan', valid: true, cover: 'Outpatient, Dental', limit: '$2,000' } : null;
+        // ============================
+        // Patient Verification
+        // ============================
+        const verifyBtn = document.getElementById('btnVerify');
+        const clearBtn = document.getElementById('btnClear');
+        const input = document.getElementById('searchInput');
+        const resultBox = document.getElementById('verificationResult');
+
+        verifyBtn.addEventListener('click', () => {
+            const query = input.value.trim();
+            if (!query) {
+                alert('Enter a policy number or member ID.');
+                return;
+            }
+
+            // Simulated lookup (replace with AJAX later)
+            const found = query.toUpperCase().startsWith('P-') ? {
+                policy: query.toUpperCase(),
+                holder: 'Ali Hassan',
+                valid: true,
+                cover: 'Outpatient, Dental',
+                limit: '$2,000'
+            } : null;
+
+            resultBox.classList.add('fade-in');
+            
             if (found) {
-                el.innerHTML = `<strong>Policy:</strong> ${found.policy} • <strong>Holder:</strong> ${found.holder} • <strong>Coverage:</strong> ${found.cover} • <strong>Limit:</strong> ${found.limit}`;
+                resultBox.innerHTML = `
+                    ✅ <strong>Policy:</strong> ${found.policy}<br>
+                    <strong>Holder:</strong> ${found.holder}<br>
+                    <strong>Coverage:</strong> ${found.cover}<br>
+                    <strong>Limit:</strong> ${found.limit}
+                `;
+                resultBox.className = 'verification-result fade-in';
             } else {
-                el.innerHTML = `<span style='color:${'var(--danger)'}'>Policy not found or invalid.</span>`;
+                resultBox.innerHTML = '❌ Policy not found or invalid.';
+                resultBox.className = 'verification-result error fade-in';
             }
-        });
-        
-        document.getElementById('btnClear').addEventListener('click', () => {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('verificationResult').innerText = 'Enter a policy number or ID and click Verify to see coverage details.';
+            
+            setTimeout(() => {
+                resultBox.classList.remove('fade-in');
+            }, 300);
         });
 
-        // View claim details
-        document.querySelectorAll('button[data-id]').forEach(b => b.addEventListener('click', (e) => {
-            const id = parseInt(e.currentTarget.dataset.id);
-            openClaimModal(id);
-        }));
+        clearBtn.addEventListener('click', () => {
+            input.value = '';
+            resultBox.className = 'verification-result';
+            resultBox.innerText = 'Enter a policy number or ID and click Verify to see coverage details.';
+        });
+
+        // ============================
+        // Claim Modal View
+        // ============================
+        document.querySelectorAll('button[data-id]').forEach(btn => {
+            btn.addEventListener('click', e => {
+                const id = e.currentTarget.dataset.id;
+                openClaimModal(id);
+            });
+        });
 
         function openClaimModal(id) {
-            // This would typically make an AJAX request to get claim details
-            alert(`Viewing claim ${id}. This would open a modal with full claim details.`);
+            // TODO: Replace alert with a real modal (Bootstrap / custom)
+            alert(`📄 Viewing claim #${id}\n\n(This will later show full details in a modal.)`);
         }
 
-        // Export functionality
+        // ============================
+        // Export Button
+        // ============================
         document.getElementById('btnExport').addEventListener('click', () => {
-            // This would typically make a request to generate a CSV export
-            alert('Exporting claims data as CSV...');
+            alert('📤 Exporting claims data as CSV...');
         });
 
-        // Focus on form when clicking "Submit Claim"
+        // ============================
+        // Quick Claim Focus Button
+        // ============================
         document.getElementById('btnNewClaim').addEventListener('click', () => {
+            const form = document.getElementById('quickClaimForm');
+            form.scrollIntoView({ behavior: 'smooth', block: 'center' });
             document.getElementById('quick_policy').focus();
-            window.scrollTo({ top: 700, behavior: 'smooth' });
         });
 
-        // Request reconciliation
+        // ============================
+        // Reconciliation Request
+        // ============================
         document.getElementById('btnRequestReconcile').addEventListener('click', () => {
-            alert('Reconciliation request submitted. Our team will contact you shortly.');
+            alert('🧾 Reconciliation request submitted. Our team will contact you shortly.');
         });
     </script>
 </body>
-
 </html>

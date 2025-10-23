@@ -1,23 +1,90 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Claim #{{ claim.id }}</h1>
+<div class="max-w-5xl mx-auto px-6 py-10">
+  <!-- Header -->
+  <div class="mb-6 border-b pb-3">
+    <h1 class="text-3xl font-bold text-gray-800">Claim #{{ claim.id }}</h1>
+    <p class="text-gray-500 mt-1">Detailed claim information and actions</p>
+  </div>
 
-<p><strong>Member:</strong> {{ claim.member.user.get_full_name }}</p>
-<p><strong>Hospital:</strong> {{ claim.hospital.username }}</p>
-<p><strong>Amount:</strong> {{ claim.amount }}</p>
-<p><strong>Date of Service:</strong> {{ claim.date_of_service }}</p>
-<p><strong>Status:</strong> {{ claim.status }}</p>
-<p><strong>Notes:</strong> <br>{{ claim.notes|linebreaks }}</p>
+  <!-- Claim Details -->
+  <div class="grid md:grid-cols-2 gap-6">
+    <div class="bg-white rounded-2xl shadow p-6">
+      <h2 class="text-lg font-semibold text-gray-700 mb-3">Claim Information</h2>
+      <ul class="space-y-2 text-gray-700">
+        <li><strong>Member:</strong> {{ claim.member.user.get_full_name }}</li>
+        <li><strong>Hospital:</strong> {{ claim.hospital.username }}</li>
+        <li><strong>Amount:</strong> ${{ claim.amount }}</li>
+        <li><strong>Date of Service:</strong> {{ claim.date_of_service }}</li>
+        <li><strong>Status:</strong>
+          <span class="inline-block px-3 py-1 rounded-full text-sm 
+            {% if claim.status == 'Approved' %}bg-green-100 text-green-700
+            {% elif claim.status == 'Rejected' %}bg-red-100 text-red-700
+            {% elif claim.status == 'Forwarded' %}bg-yellow-100 text-yellow-700
+            {% else %}bg-gray-100 text-gray-700{% endif %}">
+            {{ claim.status }}
+          </span>
+        </li>
+      </ul>
+    </div>
 
-{% if role == "hospital" and claim.status not in non_editable_status %}
-    <a href="{% url 'hospital_edit_claim' claim.pk %}" class="btn btn-sm btn-warning">Edit</a>
-{% endif %}
+    <div class="bg-white rounded-2xl shadow p-6">
+      <h2 class="text-lg font-semibold text-gray-700 mb-3">Notes</h2>
+      <p class="text-gray-600 whitespace-pre-line">
+        {{ claim.notes|default:"No notes provided." }}
+      </p>
+    </div>
+  </div>
 
-{% if role == "claim_officer" and claim.status in officer_action_status %}
-    <a href="{% url 'claim_officer_action' claim.pk 'approve' %}" class="btn btn-sm btn-success">Approve</a>
-    <a href="{% url 'claim_officer_action' claim.pk 'reject' %}" class="btn btn-sm btn-danger">Reject</a>
-    <a href="{% url 'claim_officer_action' claim.pk 'forward' %}" class="btn btn-sm btn-warning">Forward</a>
-{% endif %}
+  <!-- ACTION SECTION -->
+  <div class="mt-10 bg-white rounded-2xl shadow p-6">
+    <h2 class="text-lg font-semibold text-gray-700 mb-4">Actions</h2>
 
-<a href="{% url 'claim_dashboard' %}" class="btn btn-secondary mt-3">Back to List</a>
+    <div class="flex flex-wrap gap-3">
+      {% if role == "hospital" and claim.status not in non_editable_status %}
+        <a href="{% url 'hospital_edit_claim' claim.pk %}" 
+           class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-medium rounded-lg transition">
+           ✏️ Edit Claim
+        </a>
+      {% endif %}
+
+      {% if role == "claim_officer" and claim.status in officer_action_status %}
+        <a href="{% url 'claim_officer_action' claim.pk 'approve' %}" 
+           class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow transition">
+           ✅ Approve
+        </a>
+
+        <a href="{% url 'claim_officer_action' claim.pk 'reject' %}" 
+           class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow transition">
+           ❌ Reject
+        </a>
+
+        <a href="{% url 'claim_officer_action' claim.pk 'forward' %}" 
+           class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg shadow transition">
+           📤 Forward to Admin
+        </a>
+      {% endif %}
+
+      {% if role == "admin" and claim.status == "Forwarded" %}
+        <a href="{% url 'admin_claim_action' claim.pk 'approve' %}" 
+           class="px-4 py-2 bg-green-700 hover:bg-green-800 text-white font-semibold rounded-lg shadow transition">
+           ✅ Approve (Admin)
+        </a>
+        <a href="{% url 'admin_claim_action' claim.pk 'reject' %}" 
+           class="px-4 py-2 bg-red-700 hover:bg-red-800 text-white font-semibold rounded-lg shadow transition">
+           ❌ Reject (Admin)
+        </a>
+        <a href="{% url 'initiate_reimbursement' claim.pk %}" 
+           class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow transition">
+           💸 Initiate Reimbursement
+        </a>
+      {% endif %}
+
+      <a href="{% url 'claim_dashboard' %}" 
+         class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg transition">
+         ⬅️ Back to Dashboard
+      </a>
+    </div>
+  </div>
+</div>
 {% endblock %}

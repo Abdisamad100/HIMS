@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-md mx-auto bg-white dark:bg-slate-800 shadow rounded-lg p-6">
+    <h2 class="text-xl font-semibold mb-4">Edit User</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Full Name</label>
+            <input type="text" name="name" class="w-full border rounded px-3 py-2"
+                value="{{ profile.user.get_full_name }}">
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Email</label>
+            <input type="email" name="email" class="w-full border rounded px-3 py-2"
+                value="{{ profile.user.email }}">
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Phone</label>
+            <input type="text" name="phone" class="w-full border rounded px-3 py-2"
+                value="{{ profile.phone_number }}">
+        </div>
+
+        <div class="flex justify-end gap-2">
+            <a href="{% url 'admin_dashboard' %}" class="px-4 py-2 bg-gray-200 rounded">Cancel</a>
+            <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded">Save</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

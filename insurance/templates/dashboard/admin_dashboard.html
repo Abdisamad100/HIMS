@@ -77,6 +77,9 @@
                     <li><button data-section="hospitals"
                             class="menu-link w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/10">🏥
                             Hospitals</button></li>
+                    <li><button data-section="policies"
+                            class="menu-link w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/10">🏥
+                            policy</button></li>
                     <li><button data-section="claims"
                             class="menu-link w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/10">📂
                             Claims</button></li>
@@ -114,12 +117,16 @@
                 <!-- Right side -->
                 <div class="flex items-center gap-3">
                     <!-- Search -->
-                    <div class="relative">
-                        <input id="globalSearch" type="search" placeholder="Search users, claims, hospitals..."
-                            class="px-4 py-2 rounded-2xl border border-slate-200 bg-white/60 focus:outline-none focus:ring focus:ring-indigo-200" />
-                        <button id="searchClear"
-                            class="absolute right-2 top-1.5 text-slate-500 hidden hover:text-rose-500">✖</button>
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-semibold">Users</h2>
+                        <div class="relative">
+                            <input id="globalSearch" type="search" placeholder="Search users..."
+                                class="px-4 py-2 rounded-2xl border border-slate-200 bg-white shadow-sm focus:ring-2 focus:ring-indigo-200 focus:outline-none" />
+                            <button id="searchClear"
+                                class="absolute right-3 top-2.5 text-slate-400 hidden hover:text-rose-500">✖</button>
+                        </div>
                     </div>
+
 
                     <!-- Notifications -->
                     <div class="relative">
@@ -157,14 +164,27 @@
                             </div>
                         </button>
                         <div id="profileMenu"
-                            class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow z-50 p-2">
-                            <button
-                                class="w-full text-left px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700">Profile</button>
-                            <button
-                                class="w-full text-left px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700">Settings</button>
-                            <button
-                                class="w-full text-left px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700">Logout</button>
-                        </div>
+    class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow z-50 p-2">
+
+    <a href="{% url 'profile' %}"
+        class="block w-full text-left px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700">
+        Profile
+    </a>
+
+    <a href="#"
+        class="block w-full text-left px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700">
+        Settings
+    </a>
+
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit"
+            class="w-full text-left px-3 py-2 rounded text-rose-600 hover:bg-slate-100 dark:hover:bg-slate-700">
+            Logout
+        </button>
+    </form>
+</div>
+
                     </div>
                 </div>
             </div>
@@ -190,14 +210,14 @@
                         <div class="card p-5 bg-white dark:bg-slate-800">
                             <div>
                                 <div class="text-sm text-slate-500 dark:text-slate-400">Pending Claims</div>
-                                <div id="kpi-pending" class="text-2xl font-bold">{{ claims }}</div>
+                                <div id="kpi-pending" class="text-2xl font-bold">{{ claims_pending }}</div>
                             </div>
                         </div>
 
                         <div class="card p-5 bg-white dark:bg-slate-800">
                             <div>
                                 <div class="text-sm text-slate-500 dark:text-slate-400">Agents</div>
-                                <div id="kpi-agents" class="text-2xl font-bold">{{ agents }}</div>
+                                <div id="kpi-agents" class="text-2xl font-bold">{{ agents_count }}</div>
                             </div>
                         </div>
                     </div>
@@ -207,14 +227,15 @@
                         <div class="card p-5 bg-white dark:bg-slate-800">
                             <div>
                                 <div class="text-sm text-slate-500 dark:text-slate-400">Policies</div>
-                                <div id="kpi-policies" class="text-2xl font-bold">{{ policies }}</div>
+                                <div id="kpi-policies" class="text-2xl font-bold">{{ policies_count }}</div>
+
                             </div>
                         </div>
 
                         <div class="card p-5 bg-white dark:bg-slate-800">
                             <div>
                                 <div class="text-sm text-slate-500 dark:text-slate-400">Hospitals</div>
-                                <div id="kpi-hospitals" class="text-2xl font-bold">{{ hospitals }}</div>
+                                <div id="kpi-hospitals" class="text-2xl font-bold">{{ hospitals_count }}</div>
                             </div>
                         </div>
                     </div>
@@ -284,8 +305,7 @@
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <div class="font-medium">
-                                            #{{ claim.id }} — {{
-                                            claim.member.user.get_full_name|default:claim.member.user.username }}
+                                            {{ claim.id }}
                                         </div>
                                         <div class="text-xs text-slate-500">
                                             {{ claim.hospital }}
@@ -307,22 +327,30 @@
 
             <!-- USERS -->
             <section id="sec-users" class="hidden">
+                <!-- Header -->
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-xl font-semibold">Users</h2>
                     <div class="flex items-center gap-2">
-                        <select id="roleFilter" class="px-3 py-2 rounded border">
+                        <!-- Role Filter -->
+                        <select id="roleFilter"
+                            class="px-4 py-2 rounded-2xl border border-slate-200 bg-white shadow-sm focus:ring-2 focus:ring-indigo-200 focus:outline-none">
                             <option value="all">All roles</option>
-                            <option value="Admin">Admin</option>
-                            <option value="Agent">Agent</option>
-                            <option value="Hospital">Hospital</option>
-                            <option value="Claim Officer">Claim Officer</option>
-                            <option value="Customer">Customer</option>
+                            <option value="admin">Admin</option>
+                            <option value="agent">Agent</option>
+                            <option value="hospital">Hospital</option>
+                            <option value="claim officer">Claim Officer</option>
+                            <option value="customer">Customer</option>
                         </select>
+
+                        <!-- Add Button -->
                         <a href="{% url 'register_user' %}"
-                            class="px-3 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">＋ Add</a>
+                            class="px-4 py-2 rounded-2xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm transition">
+                            ＋ Add
+                        </a>
                     </div>
                 </div>
 
+                <!-- Table -->
                 <div class="card overflow-x-auto">
                     <table class="min-w-full text-sm">
                         <thead class="bg-slate-100 dark:bg-slate-800/50">
@@ -352,8 +380,15 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-3">
-                                    <a href="#" class="text-sky-600 mr-3" title="Edit">✎</a>
-                                    <a href="#" class="text-rose-600" title="Suspend">⛔</a>
+                                    <!-- Edit -->
+                                    <a href="{% url 'edit_user' profile.id %}" class="text-sky-600 mr-3 hover:underline"
+                                        title="Edit">✎</a>
+
+                                    <!-- Toggle status via JS -->
+                                    <button onclick="toggleUserStatus({{ profile.id }})"
+                                        class="text-rose-600 hover:underline" title="Suspend or Activate">
+                                        {% if profile.user.is_active %}⛔{% else %}✅{% endif %}
+                                    </button>
                                 </td>
                             </tr>
                             {% empty %}
@@ -365,6 +400,7 @@
                     </table>
                 </div>
 
+                <!-- Footer -->
                 <div class="mt-4 flex items-center justify-between text-sm text-slate-500">
                     <div id="usersSummary">Showing {{ users|length }} users</div>
                     <div class="flex gap-2">
@@ -373,8 +409,130 @@
                     </div>
                 </div>
 
+                <!-- Script -->
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const roleFilter = document.getElementById('roleFilter');
+                        const searchInput = document.getElementById('globalSearch');
+                        const searchClear = document.getElementById('searchClear');
+                        const usersTbody = document.getElementById('usersTbody');
+                        const usersSummary = document.getElementById('usersSummary');
 
+                        // ========= CSRF Helper =========
+                        function getCookie(name) {
+                            let cookieValue = null;
+                            if (document.cookie && document.cookie !== '') {
+                                const cookies = document.cookie.split(';');
+                                for (let cookie of cookies) {
+                                    cookie = cookie.trim();
+                                    if (cookie.startsWith(name + '=')) {
+                                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                        break;
+                                    }
+                                }
+                            }
+                            return cookieValue;
+                        }
+
+                        // ========= Toggle User Status =========
+                        window.toggleUserStatus = function (id) {
+                            if (!confirm("Are you sure you want to toggle this user's status?")) return;
+
+                            fetch(`/toggle-user-status/${id}/`, {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRFToken': getCookie('csrftoken'),
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            })
+                                .then(res => {
+                                    if (!res.ok) throw new Error("Failed to toggle status");
+                                    return res.text();
+                                })
+                                .then(() => fetchUsers())  // refresh users dynamically
+                                .catch(err => alert(err.message));
+                        };
+
+                        // ========= Fetch Filtered Users =========
+                        function fetchUsers() {
+                            const role = roleFilter ? roleFilter.value : 'all';
+                            const search = searchInput ? searchInput.value.trim() : '';
+
+                            const url = `/filter-users/?role=${encodeURIComponent(role)}&search=${encodeURIComponent(search)}`;
+
+                            fetch(url)
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data.users) {
+                                        renderUsers(data.users);
+                                        if (usersSummary) {
+                                            usersSummary.textContent = `Showing ${data.users.length} users`;
+                                        }
+                                    }
+                                })
+                                .catch(err => console.error('Error fetching users:', err));
+                        }
+
+                        // ========= Render Table =========
+                        function renderUsers(users) {
+                            usersTbody.innerHTML = '';
+
+                            if (users.length === 0) {
+                                usersTbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="px-4 py-3 text-center text-slate-500">No users found</td>
+                        </tr>`;
+                                return;
+                            }
+
+                            users.forEach(u => {
+                                const statusBadge = u.is_active
+                                    ? '<span class="px-2 py-1 rounded text-xs bg-emerald-100 text-emerald-800">Active</span>'
+                                    : '<span class="px-2 py-1 rounded text-xs bg-amber-100 text-amber-800">Inactive</span>';
+
+                                usersTbody.innerHTML += `
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60">
+                            <td class="px-4 py-3">${u.name}</td>
+                            <td class="px-4 py-3">
+                                <span class="px-2 py-1 rounded text-xs bg-slate-100 dark:bg-slate-700">${u.role}</span>
+                            </td>
+                            <td class="px-4 py-3">${u.email}</td>
+                            <td class="px-4 py-3">${statusBadge}</td>
+                            <td class="px-4 py-3">
+                                <a href="/edit-user/${u.id}/" class="text-sky-600 mr-3 hover:underline" title="Edit">✎</a>
+                                <button onclick="toggleUserStatus(${u.id})"
+                                    class="text-rose-600 hover:underline"
+                                    title="Suspend or Activate">
+                                    ${u.is_active ? '⛔' : '✅'}
+                                </button>
+                            </td>
+                        </tr>`;
+                            });
+                        }
+
+                        // ========= Filter & Search Handlers =========
+                        if (roleFilter) roleFilter.addEventListener('change', fetchUsers);
+                        if (searchInput) {
+                            searchInput.addEventListener('input', () => {
+                                searchClear.classList.toggle('hidden', !searchInput.value);
+                                fetchUsers();
+                            });
+                        }
+                        if (searchClear) {
+                            searchClear.addEventListener('click', () => {
+                                searchInput.value = '';
+                                searchClear.classList.add('hidden');
+                                fetchUsers();
+                            });
+                        }
+
+                        // Initial load
+                        fetchUsers();
+                    });
+                </script>
             </section>
+
+
 
             <!-- AGENTS -->
             <!-- AGENTS -->
@@ -400,10 +558,9 @@
                         </thead>
                         <tbody id="agentsTbody" class="divide-y">
                             {% for profile in agent_list %}
-                            {% if profile.role == 'Agent' %}
                             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60">
                                 <td class="px-4 py-3">
-                                    {{ profile.user.get_full_name|default:profile.user.username }}
+                                    {{ profile.user.username }}
                                 </td>
                                 <td class="px-4 py-3">{{ profile.user.email }}</td>
                                 <td class="px-4 py-3">{{ profile.phone_number|default:"—" }}</td>
@@ -414,11 +571,17 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-3">
-                                    <a href="#" class="text-sky-600 mr-3" title="Edit">✎</a>
-                                    <a href="#" class="text-rose-600" title="Suspend">⛔</a>
+                                    <a href="{% url 'edit_agent' profile.id %}"
+                                        class="text-sky-600 mr-3 hover:underline" title="Edit">✎</a>
+                                    <form action="{% url 'toggle_agent_status' profile.id %}" method="post"
+                                        class="inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="text-rose-600 hover:underline" title="Suspend">
+                                            {% if profile.user.is_active %}⛔{% else %}✅{% endif %}
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
-                            {% endif %}
                             {% empty %}
                             <tr>
                                 <td colspan="5" class="px-4 py-3 text-center text-slate-500">
@@ -427,6 +590,7 @@
                             </tr>
                             {% endfor %}
                         </tbody>
+
                     </table>
                 </div>
 
@@ -439,14 +603,103 @@
                 </div>
             </section>
 
-            <!-- Hospitals Section -->
-            <section id="sec-hospitals" class="hidden">
+            <!-- policy Section -->
+
+            <section id="sec-policies" class="hidden">
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-2xl font-semibold">Hospitals</h2>
-                    <button id="addHospitalBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg">+ Add
-                        Hospital</button>
+                    <h2 class="text-xl font-semibold">Policies</h2>
+                    <div class="flex items-center gap-2">
+                        <a href="{% url 'create_policy' %}"
+                            class="px-3 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">
+                            ＋ Add Policy
+                        </a>
+                    </div>
                 </div>
 
+                <div class="card overflow-x-auto">
+                    <table class="min-w-full text-sm">
+                        <thead class="bg-slate-100 dark:bg-slate-800/50">
+                            <tr>
+                                <th class="px-4 py-3 text-left">Policy Number</th>
+                                <th class="px-4 py-3 text-left">Name</th>
+                                <th class="px-4 py-3 text-left">Premium</th>
+                                <th class="px-4 py-3 text-left">Status</th>
+                                <th class="px-4 py-3 text-left">Start Date</th>
+                                <th class="px-4 py-3 text-left">End Date</th>
+                                <th class="px-4 py-3 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="policiesTbody" class="divide-y">
+                            {% for policy in policies %}
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60">
+                                <td class="px-4 py-3 font-medium">{{ policy.policy_number }}</td>
+                                <td class="px-4 py-3">{{ policy.name }}</td>
+                                <td class="px-4 py-3">{{ policy.premium }}</td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-1 rounded text-xs
+                            {% if policy.status == 'active' %}
+                                bg-emerald-100 text-emerald-800
+                            {% elif policy.status == 'expired' %}
+                                bg-rose-100 text-rose-800
+                            {% else %}
+                                bg-amber-100 text-amber-800
+                            {% endif %}">
+                                        {{ policy.status|capfirst }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3">{{ policy.start_date|date:"M d, Y" }}</td>
+                                <td class="px-4 py-3">{{ policy.end_date|date:"M d, Y" }}</td>
+                                <td class="px-4 py-3">
+                                    <a href="{% url 'edit_policy' policy.id %}"
+                                        class="text-sky-600 mr-3 hover:underline" title="Edit">✎</a>
+                                    <form action="{% url 'delete_policy' policy.id %}" method="post" class="inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="text-rose-600 hover:underline"
+                                            title="Delete">🗑</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="px-4 py-3 text-center text-slate-500">
+                                    No policies found
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4 flex items-center justify-between text-sm text-slate-500">
+                    <div>Showing {{ policies|length }} policies</div>
+                    <div class="flex gap-2">
+                        <button id="policiesPrev" class="px-3 py-1 rounded bg-white/10">Prev</button>
+                        <button id="policiesNext" class="px-3 py-1 rounded bg-white/10">Next</button>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- Hospitals Section -->
+            <section id="sec-hospitals" class="hidden">
+                <!-- Header -->
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-semibold">Hospitals</h2>
+
+                    <div class="flex gap-2">
+                        <!-- Search -->
+                        <input id="hospitalSearch" type="text" placeholder="Search hospital..."
+                            class="border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
+
+                        <!-- Add Button -->
+                        <a href="{% url 'register_user' %}"
+                            class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
+                            + Add Hospital
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Table -->
                 <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow">
                     <table class="w-full text-sm">
                         <thead>
@@ -461,39 +714,70 @@
                         </thead>
                         <tbody id="hospitalTableBody">
                             {% for hospital in hospital_list %}
-                            <tr>
-                                <td>{{ forloop.counter }}</td>
-                                <td>{{ hospital.user.get_full_name }}</td>
+                            <tr
+                                class="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/40">
+                                <td class="py-2">{{ forloop.counter }}</td>
+                                <td>{{ hospital.user.get_full_name|default:hospital.user.username }}</td>
                                 <td>{{ hospital.user.email }}</td>
                                 <td>{{ hospital.address|default:"N/A" }}</td>
                                 <td>
-                                    {% if hospital.is_active %}
+                                    {% if hospital.user.is_active %}
                                     <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">Active</span>
                                     {% else %}
                                     <span class="bg-red-100 text-rose-700 px-2 py-1 rounded text-xs">Inactive</span>
                                     {% endif %}
                                 </td>
                                 <td class="text-right">
-                                    <button onclick="editHospital({{ hospital.id }})"
-                                        class="text-indigo-600 hover:underline">Edit</button>
-                                    {% if hospital.is_active %}
-                                    <button onclick="suspendHospital({{ hospital.id }})"
-                                        class="text-rose-600 hover:underline ml-2">Suspend</button>
-                                    {% else %}
-                                    <button onclick="activateHospital({{ hospital.id }})"
-                                        class="text-green-600 hover:underline ml-2">Activate</button>
-                                    {% endif %}
+                                    <!-- Edit -->
+                                    <a href="{% url 'edit_hospital' hospital.id %}"
+                                        class="text-indigo-600 hover:underline">Edit</a>
+
+                                    <!-- Suspend / Activate -->
+                                    <form action="{% url 'toggle_hospital_status' hospital.id %}" method="post"
+                                        class="inline">
+                                        {% csrf_token %}
+                                        {% if hospital.user.is_active %}
+                                        <button type="submit"
+                                            class="text-rose-600 hover:underline ml-2">Suspend</button>
+                                        {% else %}
+                                        <button type="submit"
+                                            class="text-green-600 hover:underline ml-2">Activate</button>
+                                        {% endif %}
+                                    </form>
                                 </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="6" class="text-center py-4">No hospitals found.</td>
+                                <td colspan="6" class="text-center py-4 text-slate-500">No hospitals found.</td>
                             </tr>
                             {% endfor %}
-                            </tbody>
-
+                        </tbody>
                     </table>
                 </div>
+
+                <!-- Search Script -->
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const searchInput = document.getElementById('hospitalSearch');
+                        const tableBody = document.getElementById('hospitalTableBody');
+
+                        searchInput.addEventListener('input', () => {
+                            const term = searchInput.value.toLowerCase();
+
+                            tableBody.querySelectorAll('tr').forEach(row => {
+                                const name = row.cells[1]?.textContent.toLowerCase() || '';
+                                const email = row.cells[2]?.textContent.toLowerCase() || '';
+                                const address = row.cells[3]?.textContent.toLowerCase() || '';
+
+                                if (name.includes(term) || email.includes(term) || address.includes(term)) {
+                                    row.style.display = '';
+                                } else {
+                                    row.style.display = 'none';
+                                }
+                            });
+                        });
+                    });
+                </script>
             </section>
 
 
@@ -509,7 +793,7 @@
                         <thead class="bg-slate-100 dark:bg-slate-800/50">
                             <tr>
                                 <th class="px-4 py-3 text-left">#</th>
-                                <th class="px-4 py-3 text-left">User</th>
+                                <th class="px-4 py-3 text-left">Member</th>
                                 <th class="px-4 py-3 text-left">Hospital</th>
                                 <th class="px-4 py-3 text-left">Amount</th>
                                 <th class="px-4 py-3 text-left">Date</th>
@@ -521,20 +805,43 @@
                             {% for claim in claims_list %}
                             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60">
                                 <td class="px-4 py-3">{{ claim.id }}</td>
-                                <td class="px-4 py-3">{{ claim.user }}</td>
-                                <td class="px-4 py-3">{{ claim.hospital }}</td>
+                              <td class="px-4 py-3">
+    {% if claim.member_policy %}
+        {% if claim.member_policy.member.user.get_full_name %}
+            {{ claim.member_policy.member.user.get_full_name }}
+        {% else %}
+            {{ claim.member_policy.member.user.username }}
+        {% endif %}
+    {% else %}
+        <span class="text-gray-500 italic">No member linked</span>
+    {% endif %}
+</td>
+
+                                <td class="px-4 py-3">{{ claim.hospital.username|default:'-' }}</td>
                                 <td class="px-4 py-3">KES {{ claim.amount|floatformat:2 }}</td>
-                                <td class="px-4 py-3">{{ claim.date|date:"Y-m-d" }}</td>
-                                <td class="px-4 py-3"><span class="px-2 py-1 rounded text-xs 
-                    {% if claim.status == 'Approved' %}bg-emerald-100 text-emerald-800
-                    {% elif claim.status == 'Pending' %}bg-amber-100 text-amber-800
-                    {% else %}bg-rose-100 text-rose-800{% endif %}">{{ claim.status }}</span></td>
+                                <td class="px-4 py-3">{{ claim.date_of_service|date:"Y-m-d" }}</td>
                                 <td class="px-4 py-3">
-                                    <button class="text-sky-600 mr-2" onclick="viewClaim({{ claim.id }})">🔎</button>
-                                    {% if claim.status == 'Pending' %}
-                                    <button class="text-emerald-600 mr-2"
-                                        onclick="approveClaim({{ claim.id }})">✔</button>
+                                    <span class="px-2 py-1 rounded text-xs
+                            {% if claim.status == 'Approved' %}bg-emerald-100 text-emerald-800
+                            {% elif claim.status == 'Pending' %}bg-amber-100 text-amber-800
+                            {% elif claim.status == 'Rejected' %}bg-rose-100 text-rose-800
+                            {% elif claim.status == 'Forwarded' %}bg-blue-100 text-blue-800
+                            {% elif claim.status == 'Reimbursed' %}bg-purple-100 text-purple-800
+                            {% endif %}">
+                                        {{ claim.status }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 space-x-2">
+                                    <button class="text-sky-600" onclick="viewClaim({{ claim.id }})">🔎</button>
+
+                                    {% if claim.status in 'Pending,Forwarded' %}
+                                    <button class="text-emerald-600" onclick="approveClaim({{ claim.id }})">✔</button>
                                     <button class="text-rose-600" onclick="rejectClaim({{ claim.id }})">✖</button>
+                                    <button class="text-yellow-600" onclick="forwardClaim({{ claim.id }})">➡</button>
+                                    {% endif %}
+
+                                    {% if claim.status == 'Approved' and role == 'admin' %}
+                                    <button class="text-purple-600" onclick="reimburseClaim({{ claim.id }})">💰</button>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -548,16 +855,27 @@
                 </div>
             </section>
 
+
             <!-- REPORTS -->
             <section id="sec-reports" class="hidden">
                 <h2 class="text-xl font-semibold mb-4">Reports</h2>
-                <div class="card p-4">
+
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow">
                     <div class="flex gap-2 mb-4">
-                        <a href="" class="px-3 py-2 bg-indigo-600 text-white rounded">Export Users CSV</a>
-                        <a href="" class="px-3 py-2 bg-sky-600 text-white rounded">Export Claims CSV</a>
+                        <a href="{% url 'export_users_csv' %}"
+                            class="px-3 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
+                            Export Users CSV
+                        </a>
+
+                        <a href="{% url 'export_claims_csv' %}"
+                            class="px-3 py-2 bg-sky-600 text-white rounded hover:bg-sky-700 transition">
+                            Export Claims CSV
+                        </a>
                     </div>
-                    <div class="text-sm text-slate-600">Download quick sample reports (client-side) — wire to API for
-                        production exports.</div>
+
+                    <p class="text-sm text-slate-600 dark:text-slate-400">
+                        Click a button to download reports in CSV format.
+                    </p>
                 </div>
             </section>
 
@@ -606,7 +924,7 @@
          ***************************************************************************/
         function setActiveSection(name) {
             activeSection = name;
-            ['home', 'users', 'agents', 'hospitals', 'claims', 'reports', 'settings'].forEach(s => {
+            ['home', 'users', 'agents', 'hospitals', 'claims', 'policies', 'reports', 'settings'].forEach(s => {
                 const el = document.getElementById('sec-' + s);
                 if (el) el.classList.toggle('hidden', s !== name);
             });
@@ -622,18 +940,105 @@
         $('#openAdd')?.addEventListener('click', () => openAddUserForm());
 
         /* search */
-        $('#globalSearch')?.addEventListener('input', (e) => {
+        /* search */
+        const searchInput = $('#globalSearch');
+        const searchClear = $('#searchClear');
+        const usersTbody = $('#usersTbody');
+        const usersSummary = $('#usersSummary');
+        const roleFilter = $('#roleFilter');
+
+        // Fetch users (role + search)
+        function fetchUsers() {
+            const role = roleFilter ? roleFilter.value : "all";
+            const search = searchInput ? searchInput.value.trim() : "";
+
+            const params = new URLSearchParams({ role, search });
+            fetch(`/filter-users/?${params.toString()}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.users) {
+                        renderUsers(data.users);
+                        if (usersSummary)
+                            usersSummary.textContent = `Showing ${data.users.length} users`;
+                    }
+                })
+                .catch(err => console.error("Error fetching users:", err));
+        }
+
+        // Render users into table
+        function renderUsers(users) {
+            if (!usersTbody) return;
+            usersTbody.innerHTML = '';
+
+            if (users.length === 0) {
+                usersTbody.innerHTML = `
+            <tr>
+                <td colspan="5" class="px-4 py-3 text-center text-slate-500">
+                    No users found
+                </td>
+            </tr>`;
+                return;
+            }
+
+            users.forEach(u => {
+                const statusBadge = u.is_active
+                    ? '<span class="px-2 py-1 rounded text-xs bg-emerald-100 text-emerald-800">Active</span>'
+                    : '<span class="px-2 py-1 rounded text-xs bg-amber-100 text-amber-800">Inactive</span>';
+
+                usersTbody.innerHTML += `
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60">
+                <td class="px-4 py-3">${u.name}</td>
+                <td class="px-4 py-3">
+                    <span class="px-2 py-1 rounded text-xs bg-slate-100 dark:bg-slate-700">${u.role}</span>
+                </td>
+                <td class="px-4 py-3">${u.email}</td>
+                <td class="px-4 py-3">${statusBadge}</td>
+                <td class="px-4 py-3">
+                    <a href="/edit-user/${u.id}/" class="text-sky-600 mr-3 hover:underline" title="Edit">✎</a>
+                    <form action="/toggle-user-status/${u.id}/" method="post" class="inline">
+                        <button type="submit" class="text-rose-600 hover:underline" title="Suspend or Activate">
+                            ${u.is_active ? '⛔' : '✅'}
+                        </button>
+                    </form>
+                </td>
+            </tr>`;
+            });
+        }
+
+        // --- Live search ---
+        searchInput?.addEventListener("input", (e) => {
             const v = e.target.value.trim();
-            $('#searchClear').classList.toggle('hidden', !v);
+            searchClear.classList.toggle("hidden", !v);
+            fetchUsers();
         });
-        $('#searchClear')?.addEventListener('click', () => { $('#globalSearch').value = ''; $('#searchClear').classList.add('hidden'); });
+
+        // --- Clear button ---
+        searchClear?.addEventListener("click", () => {
+            searchInput.value = '';
+            searchClear.classList.add('hidden');
+            fetchUsers();
+        });
+
+        // --- Role filter ---
+        roleFilter?.addEventListener("change", fetchUsers);
+
+        // --- Initial load ---
+        fetchUsers();
 
         /**************************************************************************
          * Home / KPIs / Charts
          ***************************************************************************/
         function createCharts() {
-            // line (bigger, gradient)
-            const lineCtx = document.getElementById('chart-line').getContext('2d');
+            // Wait for the DOM elements to exist
+            const lineEl = document.getElementById('chart-line');
+            const donutEl = document.getElementById('chart-donut');
+
+            if (!lineEl || !donutEl) return;
+
+            // ---------------------------
+            // Line chart (Claims trend)
+            // ---------------------------
+            const lineCtx = lineEl.getContext('2d');
             const gradient = lineCtx.createLinearGradient(0, 0, 0, 300);
             gradient.addColorStop(0, 'rgba(14,165,233,0.16)');
             gradient.addColorStop(1, 'rgba(14,165,233,0.02)');
@@ -664,37 +1069,61 @@
                 }
             });
 
-            // donut
-           const statusCounts = [
-    {% if claims_approved %} {{ claims_approved }} {% else %} 0 {% endif %},
-    {% if claims_pending %} {{ claims_pending }} {% else %} 0 {% endif %},
-    {% if claims_rejected %} {{ claims_rejected }} {% else %} 0 {% endif %}
-];
+            // ---------------------------
+            // Donut chart (Claims status)
+            // ---------------------------
+            // Parse Django template values safely
+            const approved = parseInt("{{ claims_approved|default:'0' }}", 10) || 0;
+            const pending = parseInt("{{ claims_pending|default:'0' }}", 10) || 0;
+            const rejected = parseInt("{{ claims_rejected|default:'0' }}", 10) || 0;
 
-        const donutCtx = document.getElementById('chart-donut').getContext('2d');
-        chartDonut = new Chart(donutCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Approved', 'Pending', 'Rejected'],
-                datasets: [{ data: statusCounts, backgroundColor: ['#10b981', '#f59e0b', '#ef4444'], hoverOffset: 8 }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
+            const statusCounts = [approved, pending, rejected];
 
-        refreshStatusLegend();
-  }
+            const donutCtx = donutEl.getContext('2d');
+            chartDonut = new Chart(donutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Approved', 'Pending', 'Rejected'],
+                    datasets: [{
+                        data: statusCounts,
+                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // ---------------------------
+            // Refresh legend
+            // ---------------------------
+            refreshStatusLegend();
+        }
 
         function refreshStatusLegend() {
-            const legend = $('#statusLegend'); legend.innerHTML = '';
+            const legend = document.getElementById('statusLegend');
+            if (!legend || !chartDonut) return;
+
+            legend.innerHTML = '';
             const labels = chartDonut.data.labels;
             const data = chartDonut.data.datasets[0].data;
             const colors = chartDonut.data.datasets[0].backgroundColor;
-            labels.forEach((l, i) => {
-                const row = document.createElement('div'); row.className = 'flex items-center gap-2 mb-1';
-                row.innerHTML = `<span class="w-3 h-3 rounded" style="background:${colors[i]}"></span><div class="text-sm">${l} — ${data[i]}</div>`;
+
+            labels.forEach((label, i) => {
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-2 mb-1';
+                row.innerHTML = `<span class="w-3 h-3 rounded" style="background:${colors[i]}"></span>
+                         <div class="text-sm">${label} — ${data[i]}</div>`;
                 legend.appendChild(row);
             });
         }
+
+        // Call after DOM is loaded
+        document.addEventListener('DOMContentLoaded', createCharts);
+
 
         /**************************************************************************
          * Users table (filter, pagination, add/edit)
@@ -759,27 +1188,124 @@
         /**************************************************************************
          * Claims table + actions
          ***************************************************************************/
-        function viewClaim(id) {
-            // This would fetch claim data from Django backend via AJAX
-            alert('View claim functionality would fetch data from Django backend');
-        }
-
-        function approveClaim(id) {
-            alert('Claim approval would be handled by Django backend');
-        }
-
-        function rejectClaim(id) {
-            alert('Claim rejection would be handled by Django backend');
-        }
-
         /**************************************************************************
-         * Init
-         ***************************************************************************/
-        document.addEventListener('DOMContentLoaded', () => {
-            setActiveSection('home');
-            createCharts();
-            document.getElementById('siteTitle')?.addEventListener('change', (e) => document.title = e.target.value);
-        });
+     * Claims actions
+     ***************************************************************************/
+
+        // View claim details
+        function viewClaim(id) {
+            window.location.href = `/claims/${id}/`; // Go to claim detail page
+        }
+
+        // Approve claim
+        function approveClaim(id) {
+            if (!confirm('Approve this claim?')) return;
+            fetch(`/claims/${id}/approve/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert(data.error || 'Error approving claim.');
+                    }
+                })
+                .catch(() => alert('Network error while approving claim.'));
+        }
+
+        // Reject claim
+        function rejectClaim(id) {
+            if (!confirm('Reject this claim?')) return;
+            fetch(`/claims/${id}/reject/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert(data.error || 'Error rejecting claim.');
+                    }
+                })
+                .catch(() => alert('Network error while rejecting claim.'));
+        }
+
+        // Forward claim to admin
+        function forwardClaim(id) {
+            if (!confirm('Forward this claim to admin?')) return;
+            fetch(`/claims/${id}/forward/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert(data.error || 'Error forwarding claim.');
+                    }
+                })
+                .catch(() => alert('Network error while forwarding claim.'));
+        }
+
+        // Reimburse claim (admin only)
+        function reimburseClaim(id) {
+            const amount = prompt("Enter reimbursed amount (KES):");
+            if (!amount) return;
+            fetch(`/claims/${id}/reimburse/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ amount: amount })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert(data.error || 'Error reimbursing claim.');
+                    }
+                })
+                .catch(() => alert('Network error while reimbursing claim.'));
+        }
+
+        // CSRF helper
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+
+
     </script>
 
 </body>

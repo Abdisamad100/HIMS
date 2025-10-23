@@ -1,0 +1,17 @@
+<div class="card">
+  <h3>Step 1: Verify Member & Policy</h3>
+  <form method="post">
+    {% csrf_token %}
+    <label>Search by National ID or Policy Number</label>
+    <input type="text" name="search" placeholder="e.g. 12345678 or POL-2024-001" required class="form-control" />
+    <button type="submit" class="btn">Verify</button>
+  </form>
+
+  {% if messages %}
+    <ul>
+      {% for message in messages %}
+        <li class="text-{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</div>

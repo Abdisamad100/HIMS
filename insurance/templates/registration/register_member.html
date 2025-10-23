@@ -1,13 +1,20 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
 <div class="container mt-5">
   <div class="card shadow p-4 mx-auto" style="max-width: 700px;">
     <h3 class="text-center mb-4">Register New Member</h3>
 
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mt-2">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
     <form method="POST">
       {% csrf_token %}
       {{ form.non_field_errors }}
-      
+
       <h5>Account Information</h5>
       <hr>
       <div class="row">

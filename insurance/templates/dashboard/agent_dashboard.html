@@ -1,17 +1,51 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% block content %}
-<h2>Agent Dashboard</h2>
-<p>Total Members Registered: {{ total_members }}</p>
-<table border="1">
-  <tr><th>Member</th><th>Policy</th><th>Date</th></tr>
-  {% for m in members %}
-    <tr>
-      <td>{{ m.user.get_full_name }}</td>
-      <td>{{ m.policy.name }}</td>
-      <td>{{ m.created_at }}</td>
-    </tr>
-  {% empty %}
-    <tr><td colspan="3">No members yet</td></tr>
-  {% endfor %}
-</table>
+<div class="container mx-auto px-4 py-6">
+
+  <h1 class="text-3xl font-bold mb-6">Agent Dashboard</h1>
+
+  {% if messages %}
+  <div class="mb-4">
+    {% for message in messages %}
+      <div class="p-3 mb-2 rounded {{ message.tags }} bg-green-100 text-green-800">{{ message }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if member_data %}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for item in member_data %}
+    <div class="bg-white shadow rounded-lg overflow-hidden hover:shadow-lg transition duration-200">
+      <div class="p-4">
+        <h2 class="text-xl font-semibold mb-1">{{ item.member.user.get_full_name|default:item.member.user.username }}</h2>
+        <p class="text-gray-500 mb-2">Phone: {{ item.member.phone }}</p>
+        <p class="text-gray-500 mb-2">Email: {{ item.member.user.email }}</p>
+
+        <h3 class="font-semibold mt-4 mb-2">Policies</h3>
+        <ul class="space-y-2">
+          {% for policy_info in item.policies %}
+          <li class="bg-gray-50 rounded p-3 flex justify-between items-center">
+            <div>
+              <p class="font-medium">{{ policy_info.policy_name }} ({{ policy_info.policy_number }})</p>
+              <p class="text-sm text-gray-500">Premium: ${{ policy_info.premium }}</p>
+              <p class="text-sm text-gray-500">Paid: ${{ policy_info.total_paid }}</p>
+              <p class="text-sm text-gray-500">Remaining: ${{ policy_info.remaining }}</p>
+            </div>
+            <div>
+              <a href="{% url 'add_member_payment' policy_info.member_policy.id %}" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition">Add Payment</a>
+            </div>
+          </li>
+          {% empty %}
+          <li class="text-gray-400">No policies assigned.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="text-gray-500">You have not registered any members yet.</p>
+  {% endif %}
+
+</div>
 {% endblock %}

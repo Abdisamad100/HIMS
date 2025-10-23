@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mx-auto p-6">
+  <h1 class="text-2xl font-bold mb-4">Create Policy</h1>
+
+  <form method="post" class="bg-white p-6 rounded shadow-md w-full max-w-lg">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded mt-2">Save Policy</button>
+  </form>
+
+  <div class="mt-4">
+    <a href="{% url 'policy_list' %}" class="text-blue-500 underline">← Back to list</a>
+  </div>
+</div>
+{% endblock %}

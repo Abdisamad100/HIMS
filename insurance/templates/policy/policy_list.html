@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mx-auto p-6">
+  <h1 class="text-2xl font-bold mb-4">Policy List</h1>
+
+  <a href="{% url 'create_policy' %}" class="bg-blue-600 text-white px-4 py-2 rounded">Add Policy</a>
+
+  <table class="table-auto w-full mt-6 border">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="px-4 py-2 border">Policy Number</th>
+        <th class="px-4 py-2 border">Name</th>
+        <th class="px-4 py-2 border">Premium</th>
+        <th class="px-4 py-2 border">Status</th>
+        <th class="px-4 py-2 border">Start</th>
+        <th class="px-4 py-2 border">End</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for policy in policies %}
+      <tr>
+        <td class="px-4 py-2 border">{{ policy.policy_number }}</td>
+        <td class="px-4 py-2 border">{{ policy.name }}</td>
+        <td class="px-4 py-2 border">{{ policy.premium }}</td>
+        <td class="px-4 py-2 border">{{ policy.status }}</td>
+        <td class="px-4 py-2 border">{{ policy.start_date }}</td>
+        <td class="px-4 py-2 border">{{ policy.end_date }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="text-center py-4">No policies found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

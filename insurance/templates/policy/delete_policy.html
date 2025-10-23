@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-md mx-auto bg-white dark:bg-slate-800 p-6 rounded-lg shadow text-center">
+    <h2 class="text-xl font-semibold mb-4">Delete Policy</h2>
+    <p>Are you sure you want to delete <strong>{{ policy.name }}</strong>?</p>
+
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        <div class="flex justify-center gap-3">
+            <a href="{% url 'admin_dashboard' %}" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</a>
+            <button type="submit" class="px-4 py-2 bg-rose-600 text-white rounded hover:bg-rose-700">Delete</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
