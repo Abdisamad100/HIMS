@@ -68,29 +68,45 @@
                     <li><button data-section="home"
                             class="menu-link w-full flex items-center gap-3 px-3 py-2 rounded-md bg-white/10">🏠
                             Dashboard</button></li>
+
                     <li><button data-section="users"
                             class="menu-link w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/10">👥
-                            Users</button></li>
-                    <li><button data-section="agents"
-                            class="menu-link w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/10">🧑‍💼
-                            Agents</button></li>
+                            Users management</button></li>
+
+                    <!-- <li><button data-section="agents"
+                class="menu-link w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/10">🧑‍💼
+                Agents</button></li> -->
+
                     <li><button data-section="hospitals"
                             class="menu-link w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/10">🏥
-                            Hospitals</button></li>
+                            Hospitals management</button></li>
+
+                    <!-- <li><button data-section="members"
+                class="menu-link w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/10">🧾
+                Members</button></li> -->
+
+                    <!-- <li><button data-section="policyholders"
+                class="menu-link w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/10">📜
+                Policy Holders</button></li> -->
+
                     <li><button data-section="policies"
-                            class="menu-link w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/10">🏥
-                            policy</button></li>
+                            class="menu-link w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/10">📑
+                            Policy management</button></li>
+
                     <li><button data-section="claims"
                             class="menu-link w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/10">📂
-                            Claims</button></li>
+                            Claims management</button></li>
+
                     <li><button data-section="reports"
                             class="menu-link w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/10">📊
-                            Reports</button></li>
+                            Reports Management</button></li>
+
                     <li><button data-section="settings"
                             class="menu-link w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/10">⚙
                             Settings</button></li>
                 </ul>
             </nav>
+
 
             <div class="mt-auto space-y-2">
                 <button id="addUserBtn" class="w-full rounded-xl py-2 bg-white/20 hover:bg-white/30">＋ Add user</button>
@@ -164,26 +180,26 @@
                             </div>
                         </button>
                         <div id="profileMenu"
-    class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow z-50 p-2">
+                            class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow z-50 p-2">
 
-    <a href="{% url 'profile' %}"
-        class="block w-full text-left px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700">
-        Profile
-    </a>
+                            <a href="{% url 'profile' %}"
+                                class="block w-full text-left px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700">
+                                Profile
+                            </a>
 
-    <a href="#"
-        class="block w-full text-left px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700">
-        Settings
-    </a>
+                            <a href="#"
+                                class="block w-full text-left px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700">
+                                Settings
+                            </a>
 
-    <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit"
-            class="w-full text-left px-3 py-2 rounded text-rose-600 hover:bg-slate-100 dark:hover:bg-slate-700">
-            Logout
-        </button>
-    </form>
-</div>
+                            <form method="post" action="{% url 'logout' %}">
+                                {% csrf_token %}
+                                <button type="submit"
+                                    class="w-full text-left px-3 py-2 rounded text-rose-600 hover:bg-slate-100 dark:hover:bg-slate-700">
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
 
                     </div>
                 </div>
@@ -327,6 +343,46 @@
 
             <!-- USERS -->
             <section id="sec-users" class="hidden">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
+
+                    <!-- Card -->
+                    <div
+                        class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm p-5 text-center border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all duration-200">
+                        <div class="text-slate-500 text-sm font-medium mb-1">Total Users</div>
+                        <div class="text-3xl font-bold text-slate-800 dark:text-white">{{ users_count }}</div>
+                    </div>
+
+                    <div
+                        class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm p-5 text-center border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all duration-200">
+                        <div class="text-slate-500 text-sm font-medium mb-1">Admins</div>
+                        <div class="text-3xl font-bold text-indigo-600">{{ admin_count }}</div>
+                    </div>
+
+                    <div
+                        class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm p-5 text-center border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all duration-200">
+                        <div class="text-slate-500 text-sm font-medium mb-1">Agents</div>
+                        <div class="text-3xl font-bold text-sky-600">{{ agents_count }}</div>
+                    </div>
+
+                    <div
+                        class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm p-5 text-center border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all duration-200">
+                        <div class="text-slate-500 text-sm font-medium mb-1">Hospitals</div>
+                        <div class="text-3xl font-bold text-rose-600">{{ hospitals_count }}</div>
+                    </div>
+
+                    <div
+                        class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm p-5 text-center border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all duration-200">
+                        <div class="text-slate-500 text-sm font-medium mb-1">Claim Officers</div>
+                        <div class="text-3xl font-bold text-amber-600">{{ claim_officers_count }}</div>
+                    </div>
+
+                    <div
+                        class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm p-5 text-center border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all duration-200">
+                        <div class="text-slate-500 text-sm font-medium mb-1">Customers</div>
+                        <div class="text-3xl font-bold text-emerald-600">{{ customers_count }}</div>
+                    </div>
+
+                </div>
                 <!-- Header -->
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-xl font-semibold">Users</h2>
@@ -604,18 +660,40 @@
             </section>
 
             <!-- policy Section -->
-
             <section id="sec-policies" class="hidden">
+                <!-- Header -->
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-semibold">Policies</h2>
-                    <div class="flex items-center gap-2">
-                        <a href="{% url 'create_policy' %}"
-                            class="px-3 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">
-                            ＋ Add Policy
-                        </a>
+                    <h2 class="text-xl font-semibold">Policy Management</h2>
+                    <a href="{% url 'create_policy' %}"
+                        class="px-3 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">
+                        ＋ Add Policy
+                    </a>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div class="p-4 bg-white dark:bg-slate-800 rounded-2xl shadow">
+                        <div class="text-sm text-slate-500">Total Policies</div>
+                        <div class="text-2xl font-semibold">{{ total_policies }}</div>
+                    </div>
+
+                    <div class="p-4 bg-white dark:bg-slate-800 rounded-2xl shadow">
+                        <div class="text-sm text-slate-500">Active Policies</div>
+                        <div class="text-2xl font-semibold">{{ active_policies }}</div>
+                    </div>
+
+                    <div class="p-4 bg-white dark:bg-slate-800 rounded-2xl shadow">
+                        <div class="text-sm text-slate-500">Total Premium Expected</div>
+                        <div class="text-2xl font-semibold">KSh {{ total_premium }}</div>
+                    </div>
+
+                    <div class="p-4 bg-white dark:bg-slate-800 rounded-2xl shadow">
+                        <div class="text-sm text-slate-500">Expired Policies</div>
+                        <div class="text-2xl font-semibold">{{ expired_policies }}</div>
                     </div>
                 </div>
 
+                <!-- Policy Table -->
                 <div class="card overflow-x-auto">
                     <table class="min-w-full text-sm">
                         <thead class="bg-slate-100 dark:bg-slate-800/50">
@@ -670,6 +748,7 @@
                     </table>
                 </div>
 
+                <!-- Pagination Footer -->
                 <div class="mt-4 flex items-center justify-between text-sm text-slate-500">
                     <div>Showing {{ policies|length }} policies</div>
                     <div class="flex gap-2">
@@ -679,76 +758,91 @@
                 </div>
             </section>
 
-
-            <!-- Hospitals Section -->
+            <!-- 🏥 Hospitals Section -->
             <section id="sec-hospitals" class="hidden">
                 <!-- Header -->
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-2xl font-semibold">Hospitals</h2>
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
+                    <div>
+                        <h2 class="text-2xl font-semibold text-slate-800 dark:text-white">Hospitals</h2>
+                        <p class="text-slate-500 text-sm">Manage registered healthcare providers</p>
+                    </div>
 
                     <div class="flex gap-2">
                         <!-- Search -->
-                        <input id="hospitalSearch" type="text" placeholder="Search hospital..."
-                            class="border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
+                        <input id="hospitalSearch" type="text" placeholder="Search hospitals..."
+                            class="border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-900 dark:text-white transition w-48 sm:w-64" />
 
                         <!-- Add Button -->
                         <a href="{% url 'register_user' %}"
-                            class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
-                            + Add Hospital
+                            class="inline-flex items-center gap-1 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition text-sm font-medium shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add Hospital
                         </a>
                     </div>
                 </div>
 
                 <!-- Table -->
-                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow">
+                <div
+                    class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
                     <table class="w-full text-sm">
-                        <thead>
-                            <tr class="border-b border-slate-200 dark:border-slate-700">
-                                <th class="text-left py-2">#</th>
-                                <th class="text-left py-2">Hospital Name</th>
-                                <th class="text-left py-2">Email</th>
-                                <th class="text-left py-2">Location</th>
-                                <th class="text-left py-2">Status</th>
-                                <th class="text-left py-2 text-right">Actions</th>
+                        <thead class="bg-slate-50 dark:bg-slate-700/40">
+                            <tr class="text-left text-slate-600 dark:text-slate-300">
+                                <th class="py-3 px-4 font-medium">#</th>
+                                <th class="py-3 px-4 font-medium">Hospital Name</th>
+                                <th class="py-3 px-4 font-medium">Email</th>
+                                <th class="py-3 px-4 font-medium">Location</th>
+                                <th class="py-3 px-4 font-medium">Status</th>
+                                <th class="py-3 px-4 font-medium text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="hospitalTableBody">
+                        <tbody id="hospitalTableBody" class="divide-y divide-slate-100 dark:divide-slate-700">
                             {% for hospital in hospital_list %}
-                            <tr
-                                class="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/40">
-                                <td class="py-2">{{ forloop.counter }}</td>
-                                <td>{{ hospital.user.get_full_name|default:hospital.user.username }}</td>
-                                <td>{{ hospital.user.email }}</td>
-                                <td>{{ hospital.address|default:"N/A" }}</td>
-                                <td>
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                                <td class="py-3 px-4 text-slate-500">{{ forloop.counter }}</td>
+                                <td class="py-3 px-4 font-medium text-slate-800 dark:text-slate-100">
+                                    {{ hospital.user.get_full_name|default:hospital.user.username }}
+                                </td>
+                                <td class="py-3 px-4 text-slate-600 dark:text-slate-300">{{ hospital.user.email }}</td>
+                                <td class="py-3 px-4 text-slate-600 dark:text-slate-300">{{
+                                    hospital.address|default:"N/A" }}</td>
+                                <td class="py-3 px-4">
                                     {% if hospital.user.is_active %}
-                                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">Active</span>
+                                    <span
+                                        class="px-2 py-1 text-xs font-medium bg-emerald-100 text-emerald-700 rounded-full">Active</span>
                                     {% else %}
-                                    <span class="bg-red-100 text-rose-700 px-2 py-1 rounded text-xs">Inactive</span>
+                                    <span
+                                        class="px-2 py-1 text-xs font-medium bg-rose-100 text-rose-700 rounded-full">Inactive</span>
                                     {% endif %}
                                 </td>
-                                <td class="text-right">
-                                    <!-- Edit -->
-                                    <a href="{% url 'edit_hospital' hospital.id %}"
-                                        class="text-indigo-600 hover:underline">Edit</a>
+                                <td class="py-3 px-4 text-right">
+                                    <div class="inline-flex items-center gap-3">
+                                        <!-- Edit -->
+                                        <a href="{% url 'edit_hospital' hospital.id %}"
+                                            class="text-indigo-600 hover:text-indigo-800 dark:hover:text-indigo-400 font-medium text-sm">Edit</a>
 
-                                    <!-- Suspend / Activate -->
-                                    <form action="{% url 'toggle_hospital_status' hospital.id %}" method="post"
-                                        class="inline">
-                                        {% csrf_token %}
-                                        {% if hospital.user.is_active %}
-                                        <button type="submit"
-                                            class="text-rose-600 hover:underline ml-2">Suspend</button>
-                                        {% else %}
-                                        <button type="submit"
-                                            class="text-green-600 hover:underline ml-2">Activate</button>
-                                        {% endif %}
-                                    </form>
+                                        <!-- Suspend / Activate -->
+                                        <form action="{% url 'toggle_hospital_status' hospital.id %}" method="post"
+                                            class="inline">
+                                            {% csrf_token %}
+                                            {% if hospital.user.is_active %}
+                                            <button type="submit"
+                                                class="text-rose-600 hover:text-rose-800 dark:hover:text-rose-400 font-medium text-sm">Suspend</button>
+                                            {% else %}
+                                            <button type="submit"
+                                                class="text-emerald-600 hover:text-emerald-800 dark:hover:text-emerald-400 font-medium text-sm">Activate</button>
+                                            {% endif %}
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="6" class="text-center py-4 text-slate-500">No hospitals found.</td>
+                                <td colspan="6" class="text-center py-6 text-slate-500 dark:text-slate-400">No hospitals
+                                    found.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -763,17 +857,11 @@
 
                         searchInput.addEventListener('input', () => {
                             const term = searchInput.value.toLowerCase();
-
                             tableBody.querySelectorAll('tr').forEach(row => {
                                 const name = row.cells[1]?.textContent.toLowerCase() || '';
                                 const email = row.cells[2]?.textContent.toLowerCase() || '';
                                 const address = row.cells[3]?.textContent.toLowerCase() || '';
-
-                                if (name.includes(term) || email.includes(term) || address.includes(term)) {
-                                    row.style.display = '';
-                                } else {
-                                    row.style.display = 'none';
-                                }
+                                row.style.display = name.includes(term) || email.includes(term) || address.includes(term) ? '' : 'none';
                             });
                         });
                     });
@@ -783,6 +871,38 @@
 
             <!-- CLAIMS -->
             <section id="sec-claims" class="hidden">
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
+                    <!-- Pending -->
+                    <div
+                        class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 shadow-sm">
+                        <div class="text-amber-600 text-sm font-semibold">Pending</div>
+                        <div class="text-2xl font-bold mt-1">{{ stats.Pending }}</div>
+                    </div>
+
+                    <!-- Approved -->
+                    <div
+                        class="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4 shadow-sm">
+                        <div class="text-emerald-600 text-sm font-semibold">Approved</div>
+                        <div class="text-2xl font-bold mt-1">{{ stats.Approved }}</div>
+                    </div>
+
+                    <!-- Rejected -->
+                    <div
+                        class="bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-xl p-4 shadow-sm">
+                        <div class="text-rose-600 text-sm font-semibold">Rejected</div>
+                        <div class="text-2xl font-bold mt-1">{{ stats.Rejected }}</div>
+                    </div>
+
+                    <!-- Reimbursed -->
+                    <div
+                        class="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-4 shadow-sm">
+                        <div class="text-purple-600 text-sm font-semibold">Reimbursed</div>
+                        <div class="text-2xl font-bold mt-1">{{ stats.Reimbursed }}</div>
+                    </div>
+
+
+                </div>
+
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-xl font-semibold">Claims</h2>
                     <div class="text-sm text-slate-500">Manage claim approvals</div>
@@ -805,17 +925,17 @@
                             {% for claim in claims_list %}
                             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60">
                                 <td class="px-4 py-3">{{ claim.id }}</td>
-                              <td class="px-4 py-3">
-    {% if claim.member_policy %}
-        {% if claim.member_policy.member.user.get_full_name %}
-            {{ claim.member_policy.member.user.get_full_name }}
-        {% else %}
-            {{ claim.member_policy.member.user.username }}
-        {% endif %}
-    {% else %}
-        <span class="text-gray-500 italic">No member linked</span>
-    {% endif %}
-</td>
+                                <td class="px-4 py-3">
+                                    {% if claim.member_policy %}
+                                    {% if claim.member_policy.member.user.get_full_name %}
+                                    {{ claim.member_policy.member.user.get_full_name }}
+                                    {% else %}
+                                    {{ claim.member_policy.member.user.username }}
+                                    {% endif %}
+                                    {% else %}
+                                    <span class="text-gray-500 italic">No member linked</span>
+                                    {% endif %}
+                                </td>
 
                                 <td class="px-4 py-3">{{ claim.hospital.username|default:'-' }}</td>
                                 <td class="px-4 py-3">KES {{ claim.amount|floatformat:2 }}</td>

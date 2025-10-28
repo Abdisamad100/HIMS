@@ -1,51 +1,306 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container mx-auto px-4 py-6">
 
-  <h1 class="text-3xl font-bold mb-6">Agent Dashboard</h1>
+<style>
+    /* This custom CSS ensures the sidebar is fixed and the main content 
+    is correctly offset, especially for smaller screens.
+    */
+    .sidebar-wrapper {
+        width: 280px; /* Standard full width sidebar */
+        transition: all 0.3s ease-in-out;
+    }
+    
+    .main-content-wrapper {
+        margin-left: 280px;
+        transition: all 0.3s ease-in-out;
+    }
+    
+    /* Responsive Collapse (For Tablet/Small Desktop) */
+    @media (max-width: 1024px) {
+        .sidebar-wrapper {
+            width: 80px;
+        }
+        .main-content-wrapper {
+            margin-left: 80px;
+        }
+        /* Hide text labels when collapsed */
+        .sidebar-nav-link span:last-child,
+        .sidebar-brand span,
+        .user-info p {
+            display: none;
+        }
+        .sidebar-nav-link {
+            justify-content: center;
+        }
+        .sidebar-header {
+            padding: 1rem 0.5rem;
+        }
+        .sidebar-user-info {
+            padding: 1rem 0.5rem;
+        }
+    }
+    
+    /* Full Mobile Hide/Overlay (Using JS for toggle) */
+    @media (max-width: 768px) {
+        .sidebar-wrapper {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100%;
+            z-index: 50;
+            transform: translateX(-280px); /* Hidden by default */
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+        .sidebar-wrapper.active {
+            transform: translateX(0);
+        }
+        .main-content-wrapper {
+            margin-left: 0;
+            width: 100%;
+        }
+        .mobile-menu-btn {
+            display: flex !important;
+        }
+    }
+    
+    /* Overlay for mobile */
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 40;
+    }
+    .overlay.active {
+        display: block;
+    }
+</style>
 
-  {% if messages %}
-  <div class="mb-4">
+<div class="flex min-h-screen bg-gray-50">
+
+    <div class="overlay" id="mobileOverlay"></div>
+
+    <aside id="sidebar" class="sidebar-wrapper fixed h-screen top-0 bg-gray-900 flex flex-col z-50">
+        
+        <div class="sidebar-header p-6 border-b border-gray-800">
+            <div class="sidebar-brand flex items-center space-x-3 text-white">
+                <div class="h-8 w-8 bg-teal-500 rounded-lg flex items-center justify-center text-lg font-bold">A</div>
+                <span class="text-xl font-extrabold tracking-tight">Agent Portal</span>
+            </div>
+        </div>
+
+        <nav class="flex-grow p-4 space-y-2">
+            
+            <a href="{% url 'agent_dashboard' %}" 
+               class="sidebar-nav-link flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white {% if request.path == '/agent/dashboard/' %}bg-gray-800 text-white{% endif %} transition duration-150">
+                <span class="text-xl w-6 text-center">🏠</span>
+                <span class="ml-3 font-medium">Dashboard</span>
+            </a>
+
+            <a href="{% url 'register_member' %}" 
+               class="sidebar-nav-link flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition duration-150">
+                <span class="text-xl w-6 text-center">📝</span>
+                <span class="ml-3 font-medium">Register Member</span>
+            </a>
+
+            <a href="{% url 'member_list' %}" 
+               class="sidebar-nav-link flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition duration-150">
+                <span class="text-xl w-6 text-center">👥</span>
+                <span class="ml-3 font-medium">Member List</span>
+            </a>
+
+            <a href="#" 
+               class="sidebar-nav-link flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition duration-150">
+                <span class="text-xl w-6 text-center">🔎</span>
+                <span class="ml-3 font-medium">Verify Policy</span>
+            </a>
+            
+            <div class="pt-4 border-t border-gray-800 mt-4">
+                 <a href="#" 
+                   class="sidebar-nav-link flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition duration-150">
+                    <span class="text-xl w-6 text-center">📈</span>
+                    <span class="ml-3 font-medium">Reports</span>
+                </a>
+            </div>
+
+        </nav>
+
+        <div class="sidebar-user-info p-6 border-t border-gray-800 text-sm text-gray-400">
+            <p>Logged in as:</p>
+            <p class="font-semibold text-white truncate">{{ request.user.username|default:"Agent ID" }}</p>
+            <a href="{% url 'logout' %}" class="mt-2 block text-red-400 hover:text-red-300 transition duration-150">Sign Out</a>
+        </div>
+    </aside>
+
+    <main class="main-content-wrapper flex-1 p-4 sm:p-6 lg:p-8">
+        
+        <header class="flex justify-between items-center mb-8 border-b border-gray-200 pb-4 sticky top-0 bg-gray-50 z-30">
+            <div class="flex items-center">
+                <button id="mobileMenuBtn" class="mobile-menu-btn lg:hidden items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-900 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-500 mr-4">
+                    <span class="text-2xl">☰</span>
+                </button>
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
+                    Member Overview
+                </h1>
+            </div>
+             <a href="{% url 'register_member' %}" class="hidden sm:inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+                <span role="img" aria-label="plus icon" class="mr-2">➕</span> Register New Member
+            </a>
+        </header>
+
+{% if messages %}
+<div class="mb-6 space-y-3">
     {% for message in messages %}
-      <div class="p-3 mb-2 rounded {{ message.tags }} bg-green-100 text-green-800">{{ message }}</div>
+        {% if message.tags == 'success' %}
+            <div class="p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-md shadow-sm" role="alert">
+                <p>{{ message }}</p>
+            </div>
+        {% elif message.tags == 'error' or message.tags == 'danger' %}
+            <div class="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-md shadow-sm" role="alert">
+                <p>{{ message }}</p>
+            </div>
+        {% else %}
+            <div class="p-4 bg-blue-50 border-l-4 border-blue-500 text-blue-700 rounded-md shadow-sm" role="alert">
+                <p>{{ message }}</p>
+            </div>
+        {% endif %}
     {% endfor %}
-  </div>
-  {% endif %}
+</div>
+{% endif %}
 
-  {% if member_data %}
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    {% for item in member_data %}
-    <div class="bg-white shadow rounded-lg overflow-hidden hover:shadow-lg transition duration-200">
-      <div class="p-4">
-        <h2 class="text-xl font-semibold mb-1">{{ item.member.user.get_full_name|default:item.member.user.username }}</h2>
-        <p class="text-gray-500 mb-2">Phone: {{ item.member.phone }}</p>
-        <p class="text-gray-500 mb-2">Email: {{ item.member.user.email }}</p>
+{% if member_data %}
+<div class="bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Member
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+                        Contact
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Policy
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                        Premium
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+                        Paid
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Remaining
+                    </th>
+                    <th scope="col" class="relative px-6 py-3">
+                        <span class="sr-only">Actions</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for item in member_data %}
+                    {% for policy_info in item.policies %}
+                    <tr class="hover:bg-gray-50 transition duration-150">
+                        
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <a href="#" class="text-teal-600 hover:text-teal-900 font-semibold">{{ item.member.user.get_full_name|default:item.member.user.username }}</a>
+                            <div class="text-xs text-gray-500">
+                                {% if item.policies|length > 1 %}
+                                    +{{ item.policies|length|default:1 }} Policies
+                                {% endif %}
+                            </div>
+                        </td>
 
-        <h3 class="font-semibold mt-4 mb-2">Policies</h3>
-        <ul class="space-y-2">
-          {% for policy_info in item.policies %}
-          <li class="bg-gray-50 rounded p-3 flex justify-between items-center">
-            <div>
-              <p class="font-medium">{{ policy_info.policy_name }} ({{ policy_info.policy_number }})</p>
-              <p class="text-sm text-gray-500">Premium: ${{ policy_info.premium }}</p>
-              <p class="text-sm text-gray-500">Paid: ${{ policy_info.total_paid }}</p>
-              <p class="text-sm text-gray-500">Remaining: ${{ policy_info.remaining }}</p>
-            </div>
-            <div>
-              <a href="{% url 'add_member_payment' policy_info.member_policy.id %}" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition">Add Payment</a>
-            </div>
-          </li>
-          {% empty %}
-          <li class="text-gray-400">No policies assigned.</li>
-          {% endfor %}
-        </ul>
-      </div>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
+                            <div class="text-xs">{{ item.member.phone }}</div>
+                            <div class="text-xs text-gray-400 truncate">{{ item.member.user.email }}</div>
+                        </td>
+
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                            <div class="font-medium">{{ policy_info.policy_name }}</div>
+                            <div class="text-xs text-gray-500 font-mono">#{{ policy_info.policy_number }}</div>
+                        </td>
+
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 hidden md:table-cell">
+                            <span class="font-medium">${{ policy_info.premium }}</span>
+                        </td>
+
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right hidden sm:table-cell">
+                             <span class="text-green-600 font-semibold">${{ policy_info.total_paid }}</span>
+                        </td>
+
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
+                            <span class="px-2 inline-flex text-xs leading-5 font-bold rounded-full 
+                                {% if policy_info.remaining > 0 %}
+                                    bg-orange-100 text-orange-800 
+                                {% else %}
+                                    bg-green-100 text-green-800 
+                                {% endif %}">
+                                ${{ policy_info.remaining }}
+                            </span>
+                        </td>
+                        
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <a href="{% url 'add_member_payment' policy_info.member_policy.id %}" class="text-blue-600 hover:text-blue-900 font-semibold">
+                                Pay <span class="hidden lg:inline">Now</span>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr class="bg-gray-50">
+                        <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500 italic">
+                            No policies assigned to {{ item.member.user.get_full_name|default:item.member.user.username }}.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-    {% endfor %}
-  </div>
-  {% else %}
-  <p class="text-gray-500">You have not registered any members yet.</p>
-  {% endif %}
+</div>
+{% else %}
+<div class="text-center p-10 border-2 border-dashed border-gray-300 rounded-xl bg-white">
+    <svg class="mx-auto h-12 w-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20v-2a3 3 0 00-5.356-1.857M17 20v-2a3 3 0 00-5.356-1.857M12 18v2m0 0v2m0-2h2m-2 0H10m-2.644-3.857A3 3 0 005 18v2H0"/></svg>
+    <h3 class="mt-2 text-sm font-medium text-gray-900">No Members</h3>
+    <p class="mt-1 text-sm text-gray-500">
+        You haven't registered any members under your agent account yet.
+    </p>
+    <div class="mt-6">
+        <a href="{% url 'register_member' %}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+            <span role="img" aria-label="plus icon" class="mr-2">➕</span> Register New Member
+        </a>
+    </div>
+</div>
+{% endif %}
+        
+        <footer class="mt-10 pt-4 border-t border-gray-200 text-center text-sm text-gray-500">
+            &copy; 2025 Agent Portal. All rights reserved.
+        </footer>
+
+    </main>
 
 </div>
+
+<script>
+    // ==============================================
+    // Sidebar Mobile Toggle Script
+    // ==============================================
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('mobileOverlay');
+
+    mobileMenuBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+    });
+
+    overlay.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+    });
+</script>
+
 {% endblock %}

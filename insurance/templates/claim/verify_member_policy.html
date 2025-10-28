@@ -1,17 +1,174 @@
-<div class="card">
-  <h3>Step 1: Verify Member & Policy</h3>
-  <form method="post">
-    {% csrf_token %}
-    <label>Search by National ID or Policy Number</label>
-    <input type="text" name="search" placeholder="e.g. 12345678 or POL-2024-001" required class="form-control" />
-    <button type="submit" class="btn">Verify</button>
-  </form>
+<style>
+    /* CSS Variables (Assuming they are not globally defined in this snippet) */
+    :root {
+        --card-bg: #fff;
+        --text-primary: #1f2937;
+        --text-muted: #6b7280;
+        --accent: #0b9a84;
+        --accent-light: #eef6f4;
+        --danger: #ef4444;
+        --success: #10b981;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --radius: 12px;
+        --radius-sm: 8px;
+        --transition: all 0.2s ease-in-out;
+        font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
 
-  {% if messages %}
-    <ul>
-      {% for message in messages %}
-        <li class="text-{{ message.tags }}">{{ message }}</li>
-      {% endfor %}
-    </ul>
-  {% endif %}
+    /* Core Card Styling */
+    .card-verification {
+        background: var(--card-bg);
+        padding: 30px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        border: 1px solid #e5e7eb;
+        max-width: 500px; /* Constrain width on large screens */
+        margin: 20px auto; /* Centering for demo */
+        width: 90%;
+    }
+
+    .card-verification h3 {
+        color: var(--text-primary);
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 25px;
+        border-bottom: 1px solid #f3f4f6;
+        padding-bottom: 15px;
+    }
+
+    /* Form Group Styling */
+    .form-group-verify {
+        margin-bottom: 20px;
+    }
+
+    .form-group-verify label {
+        display: block;
+        font-size: 14px;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+
+    .form-control-verify {
+        width: 100%;
+        padding: 14px 16px;
+        border-radius: var(--radius-sm);
+        border: 1px solid #d1d5db;
+        font-size: 16px;
+        color: var(--text-primary);
+        transition: var(--transition);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-control-verify:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(11, 154, 132, 0.15);
+    }
+
+    /* Button Styling */
+    .btn-verify {
+        width: 100%; /* Fully responsive button */
+        background: var(--accent);
+        color: #fff;
+        padding: 14px 20px;
+        border-radius: var(--radius-sm);
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 16px;
+        display: block;
+        transition: var(--transition);
+        box-shadow: 0 2px 8px rgba(11, 154, 132, 0.3);
+        margin-top: 20px;
+    }
+
+    .btn-verify:hover {
+        background: var(--accent);
+        box-shadow: 0 4px 12px rgba(11, 154, 132, 0.4);
+        transform: translateY(-1px);
+    }
+    
+    .btn-verify:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(11, 154, 132, 0.3);
+    }
+    
+    /* Message Styling */
+    .message-list {
+        list-style: none;
+        padding: 0;
+        margin-top: 20px;
+    }
+
+    .message-item {
+        padding: 15px;
+        border-radius: var(--radius-sm);
+        margin-bottom: 10px;
+        font-weight: 500;
+        line-height: 1.5;
+        border-left: 4px solid;
+    }
+
+    .text-success {
+        background-color: rgba(16, 185, 129, 0.1); /* 10b981 */
+        color: var(--success);
+        border-left-color: var(--success);
+    }
+
+    .text-error, .text-danger {
+        background-color: rgba(239, 68, 68, 0.1); /* ef4444 */
+        color: var(--danger);
+        border-left-color: var(--danger);
+    }
+    
+    .text-info {
+        background-color: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+        border-left-color: #3b82f6;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+        .card-verification {
+            padding: 20px;
+            margin: 10px;
+            width: auto;
+        }
+        
+        .card-verification h3 {
+            font-size: 18px;
+        }
+    }
+</style>
+
+<div class="card-verification">
+    <h3>Step 1: Verify Member & Policy</h3>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group-verify">
+            <label for="search_input">Search by National ID or Policy Number</label>
+            <input 
+                type="text" 
+                name="search" 
+                id="search_input"
+                placeholder="e.g. 12345678 or POL-2024-001" 
+                required 
+                class="form-control-verify" 
+                aria-describedby="search_help"
+            />
+        </div>
+        
+        <button type="submit" class="btn-verify">
+            <span role="img" aria-label="magnifying glass">🔎</span> Verify Patient Coverage
+        </button>
+    </form>
+
+    {% if messages %}
+        <ul class="message-list">
+            {% for message in messages %}
+                <li class="message-item text-{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 </div>

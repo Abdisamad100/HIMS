@@ -1,19 +1,190 @@
-<div class="card">
-  <h3>Step 2: Record Service / Treatment</h3>
-  <form method="post">
-    {% csrf_token %}
-    <p><b>Member:</b> {{ member_policy.member.user.get_full_name }}</p>
-    <p><b>Policy:</b> {{ member_policy.policy.policy_number }} ({{ member_policy.policy.name }})</p>
+<style>
+    /* CSS Variables (For a clean, professional look) */
+    :root {
+        --card-bg: #fff;
+        --text-primary: #1f2937;
+        --text-muted: #6b7280;
+        --accent: #0b9a84;
+        --accent-dark: #0a8976;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --radius: 12px;
+        --radius-sm: 8px;
+        --transition: all 0.2s ease-in-out;
+    }
 
-    <label>Service Date</label>
-    <input type="date" name="date_of_service" required class="form-control">
+    /* Core Card Styling */
+    .card-treatment {
+        background: var(--card-bg);
+        padding: 30px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        border: 1px solid #e5e7eb;
+        max-width: 600px; /* Slightly wider for the form */
+        margin: 20px auto;
+        width: 90%;
+    }
 
-    <label>Notes</label>
-    <textarea name="notes" class="form-control" placeholder="Enter treatment details"></textarea>
+    .card-treatment h3 {
+        color: var(--text-primary);
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 25px;
+        border-bottom: 1px solid #f3f4f6;
+        padding-bottom: 15px;
+    }
 
-    <label>Amount (USD)</label>
-    <input type="number" name="amount" step="0.01" class="form-control" required>
+    /* Info Block Styling (to highlight verified data) */
+    .verified-info-block {
+        background: #f8fafc; /* Light gray background */
+        padding: 15px;
+        border-radius: var(--radius-sm);
+        margin-bottom: 25px;
+        border-left: 4px solid var(--accent);
+    }
+    
+    .verified-info-block p {
+        margin: 5px 0;
+        font-size: 15px;
+        color: var(--text-primary);
+    }
+    
+    .verified-info-block b {
+        font-weight: 600;
+        color: var(--accent);
+    }
 
-    <button type="submit" class="btn">Save and Continue</button>
-  </form>
+    /* Form Group Styling */
+    .form-group-treatment {
+        margin-bottom: 20px;
+    }
+
+    .form-group-treatment label {
+        display: block;
+        font-size: 14px;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+
+    .form-control-treatment {
+        width: 100%;
+        padding: 14px 16px;
+        border-radius: var(--radius-sm);
+        border: 1px solid #d1d5db;
+        font-size: 16px;
+        color: var(--text-primary);
+        transition: var(--transition);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        box-sizing: border-box; /* Important for responsive inputs */
+    }
+    
+    .form-control-treatment[type="date"] {
+        /* Fix for date input appearance */
+        appearance: none;
+        -webkit-appearance: none;
+    }
+
+    .form-control-treatment:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(11, 154, 132, 0.15);
+    }
+    
+    .form-control-treatment[name="notes"] {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    /* Button Styling */
+    .btn-treatment {
+        width: 100%;
+        background: var(--accent);
+        color: #fff;
+        padding: 14px 20px;
+        border-radius: var(--radius-sm);
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 16px;
+        display: block;
+        transition: var(--transition);
+        box-shadow: 0 2px 8px rgba(11, 154, 132, 0.3);
+        margin-top: 30px;
+    }
+
+    .btn-treatment:hover {
+        background: var(--accent-dark);
+        box-shadow: 0 4px 12px rgba(11, 154, 132, 0.4);
+        transform: translateY(-1px);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+        .card-treatment {
+            padding: 20px;
+            margin: 10px;
+            width: auto;
+        }
+        
+        .card-treatment h3 {
+            font-size: 18px;
+        }
+    }
+</style>
+
+<div class="card-treatment">
+    <h3>Step 2: Record Service / Treatment</h3>
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="verified-info-block">
+            <p>
+                <span role="img" aria-label="user icon">👤</span> 
+                <b>Member:</b> {{ member_policy.member.user.get_full_name }}
+            </p>
+            <p>
+                <span role="img" aria-label="document icon">📄</span> 
+                <b>Policy:</b> {{ member_policy.policy.policy_number }} ({{ member_policy.policy.name }})
+            </p>
+        </div>
+
+        <div class="form-group-treatment">
+            <label for="date_of_service">Service Date</label>
+            <input 
+                type="date" 
+                name="date_of_service" 
+                id="date_of_service"
+                required 
+                class="form-control-treatment"
+            />
+        </div>
+
+        <div class="form-group-treatment">
+            <label for="notes">Treatment Notes / Description</label>
+            <textarea 
+                name="notes" 
+                id="notes"
+                class="form-control-treatment" 
+                placeholder="Enter detailed treatment description, diagnosis, and procedure codes if available."
+            ></textarea>
+        </div>
+
+        <div class="form-group-treatment">
+            <label for="amount">Amount (USD)</label>
+            <input 
+                type="number" 
+                name="amount" 
+                id="amount"
+                step="0.01" 
+                min="0.01"
+                placeholder="e.g., 150.75"
+                class="form-control-treatment" 
+                required
+            />
+        </div>
+
+        <button type="submit" class="btn-treatment">
+            <span role="img" aria-label="save icon">💾</span> Save and Continue to Documents
+        </button>
+    </form>
 </div>

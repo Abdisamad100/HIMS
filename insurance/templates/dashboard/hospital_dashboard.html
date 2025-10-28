@@ -5,24 +5,28 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Shafi Hospital Provider Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* ROOT & BASE - Keeping original structure, adding :focus-visible for accessibility */
         :root {
             --bg: #f6f8fa;
             --card: #fff;
-            --muted: #8b98a5;
+            --muted: #6b7280;
             --accent: #0b9a84;
             --accent-light: #eef6f4;
-            --danger: #ff6b6b;
+            --accent-dark: #0a8976;
+            --danger: #ef4444;
             --warning: #f59e0b;
             --success: #10b981;
-            --info: #2563eb;
+            --info: #3b82f6;
             --purple: #8b5cf6;
-            --shadow: 0 8px 24px rgba(14, 30, 37, 0.06);
-            --shadow-hover: 0 12px 28px rgba(14, 30, 37, 0.12);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --radius: 12px;
-            --transition: all 0.3s ease;
-            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+            --radius-sm: 8px;
+            --transition: all 0.2s ease-in-out;
+            font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; /* Added sans-serif fallback */
         }
 
         * {
@@ -33,8 +37,9 @@
 
         body {
             background: var(--bg);
-            color: #0f1720;
+            color: #111827;
             line-height: 1.5;
+            font-weight: 400;
         }
 
         .app {
@@ -42,10 +47,10 @@
             min-height: 100vh;
         }
 
-        /* Sidebar */
+        /* Sidebar - No major changes, already modern */
         .sidebar {
-            width: 260px;
-            background: linear-gradient(180deg, #0d3b36, #0b2f2b);
+            width: 280px;
+            background: linear-gradient(180deg, #0d3b36 0%, #0b2f2b 100%);
             color: #fff;
             padding: 24px 0;
             position: fixed;
@@ -53,11 +58,14 @@
             overflow-y: auto;
             z-index: 100;
             transition: var(--transition);
+            box-shadow: var(--shadow-lg);
         }
+        
+        /* ... (rest of sidebar styles are kept the same) ... */
 
         .sidebar-header {
             padding: 0 24px 24px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             margin-bottom: 16px;
         }
 
@@ -74,12 +82,13 @@
             border-radius: 10px;
             background: #fff url('logo.png') center/cover no-repeat;
             display: inline-block;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .sidebar h2 {
             font-size: 18px;
             font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
         }
 
         .nav {
@@ -90,18 +99,20 @@
             display: flex;
             gap: 12px;
             align-items: center;
-            padding: 12px 16px;
-            border-radius: 10px;
+            padding: 14px 16px;
+            border-radius: var(--radius-sm);
             color: rgba(255, 255, 255, 0.85);
             text-decoration: none;
             margin-bottom: 4px;
             transition: var(--transition);
             font-weight: 500;
+            position: relative;
         }
 
         .nav a:hover {
             background: rgba(255, 255, 255, 0.08);
             color: #fff;
+            transform: translateX(4px);
         }
 
         .nav a.active {
@@ -110,9 +121,21 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
+        .nav a.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--accent);
+            border-radius: 0 4px 4px 0;
+        }
+
         .nav-icon {
             width: 20px;
             text-align: center;
+            font-size: 18px;
         }
 
         .user-info {
@@ -125,20 +148,37 @@
             color: rgba(255, 255, 255, 0.7);
             font-size: 13px;
         }
-
+        
         /* Main Content */
         .main {
             flex: 1;
-            padding: 24px;
-            margin-left: 260px;
+            padding: 32px;
+            margin-left: 280px;
             transition: var(--transition);
+            max-width: calc(100vw - 280px);
+            min-width: 0; /* Ensures content doesn't overflow */
         }
 
         header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
+            align-items: flex-start;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 16px;
+            /* Modernization: Sticky Header */
+            position: sticky;
+            top: 0;
+            background: var(--bg);
+            padding-top: 0;
+            padding-bottom: 16px;
+            z-index: 50;
+            border-bottom: 1px solid transparent; /* Placeholder for subtle scroll shadow */
+        }
+        
+        .header-scrolled { /* Class to add subtle shadow on scroll (needs JS) */
+            box-shadow: var(--shadow-md);
+            border-bottom: 1px solid #e5e7eb;
         }
 
         .brand {
@@ -158,26 +198,31 @@
 
         h1 {
             margin: 0;
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 700;
+            color: #111827;
+            line-height: 1.2;
         }
 
         .subtitle {
             color: var(--muted);
-            font-size: 14px;
-            margin-top: 4px;
+            font-size: 15px;
+            margin-top: 6px;
+            font-weight: 400;
         }
 
         .quick-actions {
             display: flex;
             gap: 12px;
+            flex-wrap: wrap;
         }
 
+        /* Buttons: Added focus-visible */
         .btn {
             background: var(--accent);
             color: #fff;
-            padding: 10px 16px;
-            border-radius: 10px;
+            padding: 12px 20px;
+            border-radius: var(--radius-sm);
             border: none;
             cursor: pointer;
             font-weight: 600;
@@ -186,48 +231,62 @@
             align-items: center;
             gap: 8px;
             transition: var(--transition);
-            box-shadow: 0 4px 12px rgba(11, 154, 132, 0.2);
+            box-shadow: 0 2px 4px rgba(11, 154, 132, 0.2);
+            white-space: nowrap;
         }
-
+        
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(11, 154, 132, 0.3);
+            box-shadow: 0 4px 8px rgba(11, 154, 132, 0.3);
+            background: var(--accent-dark);
+        }
+        
+        .btn:focus-visible { /* Accessibility improvement */
+            outline: 2px solid var(--accent);
+            outline-offset: 3px;
         }
 
         .btn.ghost {
             background: transparent;
             color: var(--accent);
-            border: 1px solid rgba(11, 154, 132, 0.2);
+            border: 1px solid rgba(11, 154, 132, 0.3);
             box-shadow: none;
         }
 
         .btn.ghost:hover {
             background: var(--accent-light);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(11, 154, 132, 0.1);
+            box-shadow: 0 2px 4px rgba(11, 154, 132, 0.1);
+        }
+        
+        .btn.ghost:focus-visible { /* Accessibility improvement */
+            outline: 2px solid var(--accent);
+            outline-offset: 3px;
         }
 
-        /* KPIs */
+        /* KPIs - Improved hover and base styling */
         .kpis {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
         }
 
         .kpi-card {
             background: var(--card);
-            padding: 20px;
+            padding: 24px;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             transition: var(--transition);
             position: relative;
             overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            cursor: default; /* Hint it's not a clickable item */
         }
 
         .kpi-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px); /* Slightly less dramatic hover */
+            box-shadow: var(--shadow-md);
         }
 
         .kpi-card::before {
@@ -244,75 +303,90 @@
             color: var(--muted);
             font-size: 14px;
             margin-bottom: 8px;
+            font-weight: 500;
         }
 
         .kpi .value {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 700;
-            color: #0f1720;
+            color: #111827;
+            line-height: 1.2;
         }
 
-        /* Verification Section */
+        /* Verification Section - No major changes, already modern */
         .verification-card {
             background: var(--card);
-            padding: 20px;
+            padding: 24px;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-            margin-bottom: 24px;
+            margin-bottom: 32px;
+            border: 1px solid rgba(0, 0, 0, 0.03);
         }
 
         .search-row {
             display: flex;
             gap: 12px;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
+        /* Inputs - Added focus-visible */
         .search-row input {
             flex: 1;
-            padding: 12px 16px;
-            border-radius: 10px;
-            border: 1px solid #e6edf0;
-            font-size: 14px;
+            min-width: 250px;
+            padding: 14px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid #e5e7eb;
+            font-size: 15px;
             transition: var(--transition);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
-        .search-row input:focus {
+        .search-row input:focus, .search-row input:focus-visible { /* Combined focus states */
             outline: none;
             border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(11, 154, 132, 0.1);
         }
 
         .search-row button {
-            padding: 12px 16px;
-            border-radius: 10px;
+            padding: 14px 20px;
+            border-radius: var(--radius-sm);
             border: none;
             background: var(--accent-light);
             color: var(--accent);
             cursor: pointer;
             font-weight: 600;
             transition: var(--transition);
+            white-space: nowrap;
         }
 
         .search-row button:hover {
             background: var(--accent);
             color: white;
         }
+        
+        .search-row button:focus-visible { /* Accessibility improvement */
+            outline: 2px solid var(--accent);
+            outline-offset: 3px;
+        }
 
         .verification-result {
-            padding: 16px;
-            border-radius: 10px;
+            padding: 20px;
+            border-radius: var(--radius-sm);
             background: var(--accent-light);
             color: var(--accent);
-            font-size: 14px;
+            font-size: 15px;
             line-height: 1.6;
+            border-left: 4px solid var(--accent);
         }
 
         .verification-result.error {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
+            background: rgba(239, 68, 68, 0.08);
+            color: var(--danger);
+            border-left-color: var(--danger);
         }
 
-        /* Layout */
+        /* Layout - Keeping the clean grid structure */
         .layout {
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -325,10 +399,11 @@
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.03);
         }
 
         .card:hover {
-            box-shadow: var(--shadow-hover);
+            box-shadow: var(--shadow-md);
         }
 
         .card h3 {
@@ -336,74 +411,13 @@
             margin-bottom: 20px;
             font-size: 18px;
             font-weight: 600;
-            color: #0f1720;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-
-        /* Table */
-        .table-container {
-            overflow-x: auto;
-            border-radius: 10px;
-            border: 1px solid #f1f5f7;
-        }
-
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            padding: 14px 16px;
-            border-bottom: 1px solid #f1f5f7;
-            text-align: left;
-            white-space: nowrap;
-        }
-
-        thead th {
-            color: var(--muted);
-            font-size: 13px;
-            font-weight: 600;
-            background: #f8fafc;
-        }
-
-        tbody tr:hover {
-            background: #f8fafc;
-        }
-
-        .status {
-            font-weight: 700;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            display: inline-block;
-        }
-
-        .status.pending {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--warning);
-        }
-
-        .status.approved {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-        }
-
-        .status.reimbursed {
-            background: rgba(37, 99, 235, 0.1);
-            color: var(--info);
-        }
-
-        .status.rejected {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
-        }
-
-        .status.forwarded {
-            background: rgba(139, 92, 246, 0.1);
-            color: var(--purple);
-        }
-
-        /* Form */
+        
+        /* Form - Applying consistent focus styles */
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -412,7 +426,7 @@
         }
 
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
 
         label {
@@ -427,16 +441,20 @@
         select,
         textarea {
             width: 100%;
-            padding: 12px 16px;
-            border-radius: 10px;
-            border: 1px solid #e6edf0;
-            font-size: 14px;
+            padding: 14px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid #e5e7eb;
+            font-size: 15px;
             transition: var(--transition);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
         input:focus,
         select:focus,
-        textarea:focus {
+        textarea:focus,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible { /* Combined focus states */
             outline: none;
             border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(11, 154, 132, 0.1);
@@ -445,31 +463,49 @@
         .small {
             font-size: 13px;
             color: var(--muted);
+            line-height: 1.5;
         }
 
         .form-actions {
             display: flex;
             gap: 12px;
-            margin-top: 20px;
+            margin-top: 24px;
+            flex-wrap: wrap;
         }
 
         /* Chart */
         .chart-container {
             position: relative;
-            height: 200px;
+            height: 240px;
             width: 100%;
         }
 
         /* Footer */
         footer {
-            margin-top: 24px;
+            margin-top: 32px;
             font-size: 13px;
             color: var(--muted);
             text-align: center;
             padding: 16px;
+            border-top: 1px solid #e5e7eb;
         }
 
-        /* Responsive */
+        /* Responsive - Minor tweaks for smoother transitions */
+        @media (max-width: 1200px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                width: 260px;
+            }
+            
+            .main {
+                margin-left: 260px;
+                max-width: calc(100vw - 260px);
+            }
+        }
+
         @media (max-width: 1024px) {
             .sidebar {
                 width: 80px;
@@ -494,18 +530,21 @@
 
             .nav-icon {
                 width: auto;
+                font-size: 20px;
             }
 
             .main {
                 margin-left: 80px;
+                max-width: calc(100vw - 80px);
+                padding: 24px;
+            }
+            
+            header {
+                padding-top: 0;
             }
         }
 
         @media (max-width: 900px) {
-            .layout {
-                grid-template-columns: 1fr;
-            }
-
             .kpis {
                 grid-template-columns: 1fr;
             }
@@ -520,6 +559,8 @@
 
             .main {
                 margin-left: 0;
+                max-width: 100%;
+                padding: 20px; /* Reduced padding for mobile */
             }
 
             .mobile-logo {
@@ -527,26 +568,36 @@
             }
 
             .brand h1 {
-                font-size: 20px;
+                font-size: 24px;
             }
 
             .mobile-menu-btn {
                 display: block;
-                background: none;
-                border: none;
-                font-size: 24px;
-                cursor: pointer;
-                color: var(--accent);
+            }
+            
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding-bottom: 16px;
+            }
+            
+            .quick-actions {
+                width: 100%;
+                justify-content: flex-start;
             }
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 640px) {
             .form-row {
                 grid-template-columns: 1fr;
             }
 
             .search-row {
                 flex-direction: column;
+            }
+            
+            .search-row input {
+                min-width: 100%;
             }
 
             .quick-actions {
@@ -558,19 +609,25 @@
                 width: 100%;
                 justify-content: center;
             }
-
-            header {
+            
+            .form-actions {
                 flex-direction: column;
-                align-items: flex-start;
-                gap: 16px;
             }
-
-            .brand {
+            
+            .form-actions .btn {
                 width: 100%;
+            }
+            
+            .table-container {
+                border-radius: var(--radius-sm);
+            }
+            
+            th, td {
+                padding: 12px 10px;
             }
         }
 
-        /* Mobile Menu Button */
+        /* Mobile Menu Button - No change */
         .mobile-menu-btn {
             display: none;
             background: none;
@@ -579,6 +636,13 @@
             cursor: pointer;
             color: var(--accent);
             margin-right: 16px;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+        
+        .mobile-menu-btn:hover {
+            background: var(--accent-light);
         }
 
         /* Animation for verification result */
@@ -590,11 +654,28 @@
         .fade-in {
             animation: fadeIn 0.3s ease;
         }
+        
+        /* Overlay for mobile menu */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
     </style>
 </head>
 
 <body>
     <div class="app">
+        <div class="overlay" id="overlay"></div>
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="logo-container">
@@ -615,14 +696,13 @@
                     <span>Verify Patient</span>
                 </a>
 
-                <a href="{% url 'hospital_add_claim' %}" class="{% if 'claim/add' in request.path %}active{% endif %}">
-                    <span class="nav-icon">📝</span>
-                    <span>Submit Claim</span>
+                <a href="#quickClaimCard" id="navQuickClaim" class="{% if 'claim/add' in request.path %}active{% endif %}"> <span class="nav-icon">📝</span>
+                    <span>Manage Claim</span>
                 </a>
 
                 <a href="{% url 'claim_list' %}" class="{% if 'claims' in request.path and not 'add' in request.path %}active{% endif %}">
                     <span class="nav-icon">💳</span>
-                    <span>Reimbursements</span>
+                    <span>Reimbursements&payments</span>
                 </a>
 
                 <a href="#" class="{% if 'reports' in request.path %}active{% endif %}">
@@ -642,9 +722,9 @@
         </aside>
 
         <main class="main">
-            <header>
+            <header id="mainHeader">
                 <div class="brand">
-                    <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+                    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle Navigation Menu">☰</button>
                     <div class="mobile-logo"></div>
                     <div>
                         <h1>Provider Dashboard</h1>
@@ -652,18 +732,17 @@
                     </div>
                 </div>
                 <div class="quick-actions">
-                    <button class="btn" id="btnNewClaim">
+                    <button class="btn" id="btnNewClaim" aria-label="Submit a new claim">
                         <span>+</span>
                         <span>Submit Claim</span>
                     </button>
-                    <button class="btn ghost" id="btnExport">
+                    <button class="btn ghost" id="btnExport" aria-label="Export data as CSV">
                         <span>📤</span>
                         <span>Export CSV</span>
                     </button>
                 </div>
             </header>
 
-            <!-- KPIs -->
             <section class="kpis">
                 <div class="kpi-card kpi">
                     <div class="label">Total Claims</div>
@@ -679,23 +758,21 @@
                 </div>
             </section>
 
-            <!-- Verification Section -->
             <section class="verification-card">
                 <div class="search-row">
-                    <input type="text" id="searchInput" placeholder="Search by policy #, patient name or national ID" />
+                    <input type="text" id="searchInput" placeholder="Search by policy #, patient name or national ID" aria-label="Policy number or patient ID" />
                     <button id="btnVerify">Verify Patient</button>
                     <button class="btn ghost" id="btnClear">Clear</button>
                 </div>
-                <div id="verificationResult" class="verification-result">
-                    Enter a policy number or ID and click Verify to see coverage details.
+                <div id="verificationResult" class="verification-result" role="status">
+                    Enter a policy number or ID and click **Verify Patient** to see coverage details.
                 </div>
             </section>
 
-            <!-- Claims + Quick Claim -->
             <div class="layout">
                 <div>
                     <div class="card">
-                        <h3>Recent Claims</h3>
+                        <h3><span role="img" aria-label="list icon">📋</span> Recent Claims</h3>
                         <div class="table-container">
                             <table class="table" id="claimsTable">
                                 <thead>
@@ -718,7 +795,7 @@
                                         <td><span class="status {{ claim.status|lower }}">{{ claim.status }}</span></td>
                                         <td>
                                             {% if claim.status not in non_editable_status %}
-                                            <button class="btn ghost" data-id="{{ claim.id }}">View</button>
+                                            <button class="btn ghost" data-id="{{ claim.id }}" aria-label="View claim {{ claim.id }}">View</button>
                                             {% else %}
                                             <span class="small">Read Only</span>
                                             {% endif %}
@@ -726,7 +803,7 @@
                                     </tr>
                                     {% empty %}
                                     <tr>
-                                        <td colspan="6" style="text-align: center;">No claims found</td>
+                                        <td colspan="6" style="text-align: center; color: var(--muted);">No claims found to display.</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -734,28 +811,25 @@
                         </div>
                     </div>
 
-                    <div class="card" style="margin-top:24px">
-                        <h3>📝 Submit Claim (Quick)</h3>
+                    <div class="card" style="margin-top:24px" id="quickClaimCard"> <h3>📝 Submit Claim (Quick)</h3>
 
                         <form method="post" action="{% url 'hospital_add_claim' %}" enctype="multipart/form-data" id="quickClaimForm">
                             {% csrf_token %}
 
-                            <!-- Policy & Patient Info -->
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>Policy Number</label>
-                                    <input name="policy_number" id="quick_policy" placeholder="P-2024-001" required />
+                                    <label for="quick_policy">Policy Number <span style="color:var(--danger)">*</span></label>
+                                    <input name="policy_number" id="quick_policy" placeholder="P-2024-001" required aria-required="true" />
                                 </div>
                                 <div class="form-group">
-                                    <label>Patient Name</label>
-                                    <input name="patient_name" id="quick_patient" placeholder="John Doe" required />
+                                    <label for="quick_patient">Patient Name <span style="color:var(--danger)">*</span></label>
+                                    <input name="patient_name" id="quick_patient" placeholder="John Doe" required aria-required="true" />
                                 </div>
                             </div>
 
-                            <!-- Claim Details -->
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>Claim Type</label>
+                                    <label for="quick_type">Claim Type</label>
                                     <select name="claim_type" id="quick_type">
                                         <option>Outpatient</option>
                                         <option>Inpatient</option>
@@ -764,19 +838,17 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label>Amount (USD)</label>
-                                    <input name="amount" id="quick_amount" type="number" placeholder="120" required />
+                                    <label for="quick_amount">Amount (USD) <span style="color:var(--danger)">*</span></label>
+                                    <input name="amount" id="quick_amount" type="number" step="0.01" min="0.01" placeholder="120.00" required aria-required="true" />
                                 </div>
                             </div>
 
-                            <!-- File Upload -->
                             <div class="form-group">
-                                <label>Attach Documents</label>
+                                <label for="quick_files">Attach Documents</label>
                                 <input name="documents" id="quick_files" type="file" multiple />
                                 <div class="small">Upload treatment notes, invoices, or lab reports (PDF, JPG, PNG)</div>
                             </div>
 
-                            <!-- Buttons -->
                             <div class="form-actions">
                                 <button type="submit" class="btn" id="btnQuickSubmit">Submit Claim</button>
                                 <button type="reset" class="btn ghost">Reset</button>
@@ -787,14 +859,14 @@
 
                 <aside>
                     <div class="card">
-                        <h3>Claims by Status</h3>
+                        <h3>📊 Claims by Status</h3>
                         <div class="chart-container">
                             <canvas id="claimsByStatus"></canvas>
                         </div>
                     </div>
 
                     <div class="card" style="margin-top:24px">
-                        <h3>Reimbursements</h3>
+                        <h3>💰 Reimbursements</h3>
                         <div class="small" style="margin-bottom:16px">Last settlement: <strong>$4,200</strong> (3 days ago)</div>
                         <button class="btn" id="btnRequestReconcile">Request Reconciliation</button>
                     </div>
@@ -814,13 +886,51 @@
         // ============================
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const sidebar = document.querySelector('.sidebar');
+        const overlay = document.getElementById('overlay');
         
         mobileMenuBtn.addEventListener('click', () => {
             sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        });
+        
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+        
+        // ============================
+        // Smooth Scroll to Quick Claim Form
+        // ============================
+        const btnNewClaim = document.getElementById('btnNewClaim');
+        const navQuickClaim = document.getElementById('navQuickClaim');
+        const quickClaimCard = document.getElementById('quickClaimCard');
+
+        const scrollToQuickClaim = (e) => {
+            e.preventDefault();
+            quickClaimCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Close mobile menu if open
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        };
+
+        btnNewClaim.addEventListener('click', scrollToQuickClaim);
+        navQuickClaim.addEventListener('click', scrollToQuickClaim);
+        
+        // ============================
+        // Header Scroll Shadow (Modern UX touch)
+        // ============================
+        const mainHeader = document.getElementById('mainHeader');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                mainHeader.classList.add('header-scrolled');
+            } else {
+                mainHeader.classList.remove('header-scrolled');
+            }
         });
 
         // ============================
-        // Chart Configuration
+        // Chart Configuration (No change needed, it's modern)
         // ============================
         const statusColors = {
             'Pending': '#f59e0b',
@@ -868,7 +978,7 @@
         });
 
         // ============================
-        // Patient Verification
+        // Patient Verification (No major change needed)
         // ============================
         const verifyBtn = document.getElementById('btnVerify');
         const clearBtn = document.getElementById('btnClear');
@@ -878,7 +988,9 @@
         verifyBtn.addEventListener('click', () => {
             const query = input.value.trim();
             if (!query) {
-                alert('Enter a policy number or member ID.');
+                resultBox.innerHTML = 'Enter a policy number or member ID.';
+                resultBox.className = 'verification-result error fade-in';
+                setTimeout(() => resultBox.classList.remove('fade-in'), 300);
                 return;
             }
 
@@ -895,15 +1007,18 @@
             
             if (found) {
                 resultBox.innerHTML = `
-                    ✅ <strong>Policy:</strong> ${found.policy}<br>
+                    ✅ **Verification Successful**<br>
+                    <strong>Policy:</strong> ${found.policy}<br>
                     <strong>Holder:</strong> ${found.holder}<br>
                     <strong>Coverage:</strong> ${found.cover}<br>
-                    <strong>Limit:</strong> ${found.limit}
+                    <strong>Limit Remaining:</strong> ${found.limit}
                 `;
                 resultBox.className = 'verification-result fade-in';
+                resultBox.setAttribute('aria-live', 'assertive');
             } else {
-                resultBox.innerHTML = '❌ Policy not found or invalid.';
+                resultBox.innerHTML = '❌ **Verification Failed:** Policy not found or invalid.';
                 resultBox.className = 'verification-result error fade-in';
+                resultBox.setAttribute('aria-live', 'assertive');
             }
             
             setTimeout(() => {
@@ -913,47 +1028,11 @@
 
         clearBtn.addEventListener('click', () => {
             input.value = '';
+            resultBox.innerHTML = 'Enter a policy number or ID and click **Verify Patient** to see coverage details.';
             resultBox.className = 'verification-result';
-            resultBox.innerText = 'Enter a policy number or ID and click Verify to see coverage details.';
-        });
-
-        // ============================
-        // Claim Modal View
-        // ============================
-        document.querySelectorAll('button[data-id]').forEach(btn => {
-            btn.addEventListener('click', e => {
-                const id = e.currentTarget.dataset.id;
-                openClaimModal(id);
-            });
-        });
-
-        function openClaimModal(id) {
-            // TODO: Replace alert with a real modal (Bootstrap / custom)
-            alert(`📄 Viewing claim #${id}\n\n(This will later show full details in a modal.)`);
-        }
-
-        // ============================
-        // Export Button
-        // ============================
-        document.getElementById('btnExport').addEventListener('click', () => {
-            alert('📤 Exporting claims data as CSV...');
-        });
-
-        // ============================
-        // Quick Claim Focus Button
-        // ============================
-        document.getElementById('btnNewClaim').addEventListener('click', () => {
-            const form = document.getElementById('quickClaimForm');
-            form.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            document.getElementById('quick_policy').focus();
-        });
-
-        // ============================
-        // Reconciliation Request
-        // ============================
-        document.getElementById('btnRequestReconcile').addEventListener('click', () => {
-            alert('🧾 Reconciliation request submitted. Our team will contact you shortly.');
+            resultBox.setAttribute('aria-live', 'polite');
         });
     </script>
 </body>
+
 </html>
